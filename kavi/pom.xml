@@ -14,7 +14,7 @@
         <module>kavi-kong</module>
         <module>kavi-api</module>
         <module>kavi-common</module>
-        <module>app</module>
+        <module>kavi-app</module>
     </modules>
     <groupId>com.github.kavi</groupId>
     <artifactId>kavi</artifactId>
