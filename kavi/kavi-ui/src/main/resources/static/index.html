@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>KAVI</title>
+    <link rel="stylesheet" href="webui/plugins/fontawesome-free/all.css">
+    <link rel="stylesheet" href="webui/adminlte/css/adminlte.min.css">
+    <link rel="stylesheet" href="webui/plugins/OverlayScrollbars.min.css">
+</head>
+<body class="hold-transition sidebar-mini sidebar-open layout-fixed dark-mode" data-panel-auto-height-mode="height">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <!-- Navbar -->
+    <nav class="main-header navbar navbar-expand navbar-dark">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+            </li>
+            <li class="nav-item d-none d-sm-inline-block">
+                <a href="#" class="nav-link">Home</a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main Sidebar Container -->
+    <aside class="main-sidebar sidebar-dark-primary elevation-4">
+        <!--KAVI logo-->
+        <a href="#" class="brand-link">
+            <img src="webui/imgs/kavi-logo.png" alt="kavi logo" class="brand-image img-size-64 elevation-1" style="opacity: .8">
+            <span class="brand-text font-weight-light"><b>KAVI</b></span>
+        </a>
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- Sidebar Menu -->
+            <nav class="mt-2">
+                <ul class="nav nav-pills nav-sidebar flex-column" role="menu" data-accordion="false">
+                    <li class="nav-item">
+                        <a href="webui/pages/dashboard.html" class="nav-link active">
+                            <i class="nav-icon fas fa-tachometer-alt"></i>
+                            <p>
+                                Dashboard
+                            </p>
+                        </a>
+                    </li>
+                    <li class="nav-header"><b>GATEWAY</b></li>
+                    <li class="nav-item">
+                        <a href="webui/pages/configinfo.html" class="nav-link">
+                            <i class="fas fa-info-circle nav-icon"></i>
+                            <p>CONFIG INFO</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="webui/pages/services.html" class="nav-link">
+                            <i class="nav-icon fa fa-cloud"></i>
+                            <p>SERVICES</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fa fa-route nav-icon"></i>
+                            <p>ROUTES</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fa fa-users nav-icon"></i>
+                            <p>CONSUMERS</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fa fa-arrows-alt nav-icon"></i>
+                            <p>UPSTREAMS</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fa fa-plug nav-icon"></i>
+                            <p>PLUGINS</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fa fa-certificate nav-icon"></i>
+                            <p>CERTIFICATES</p>
+                        </a>
+                    </li>
+                    <li class="nav-header"><b>KAVI ADMIN</b></li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="nav-icon fa fa-link"></i>
+                            <p>
+                                NODES
+                            </p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="nav-icon fa fa-hammer"></i>
+                            <p>
+                                SETTINGS
+                            </p>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </aside>
+
+    <div class="content-wrapper iframe-mode bg-dark" data-widget="iframe" data-auto-dark-mode="true" data-loading-screen="750">
+        <div class="nav navbar navbar-expand-lg navbar-dark border-bottom border-dark p-0">
+            <a class="nav-link bg-danger" href="#" data-widget="iframe-close">Close</a>
+            <ul class="navbar-nav" role="tablist">
+                <li class="nav-item active" role="presentation">
+                    <a class="nav-link active" data-toggle="row" id="tab-index-html" href="#index-html" role="tab" aria-controls="panel-index-html" aria-selected="true">Dashboard</a>
+                </li>
+            </ul>
+            <a class="nav-link bg-dark" href="#" data-widget="iframe-fullscreen"><i class="fas fa-expand"></i></a>
+        </div>
+        <div class="tab-content">
+            <div class="tab-empty">
+
+            </div>
+            <div class="tab-loading">
+                <div>
+                    <h2 class="display-4">loading...<i class="fa fa-sync fa-spin"></i></h2>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="index-html" role="tabpanel" aria-labelledby="tab-index-html"><iframe src="./webui/pages/dashboard.html"></iframe></div>
+        </div>
+    </div>
+
+    <footer class="main-footer">
+        <div class="float-right d-none d-sm-block">
+            <b>Version</b> 0.0.1
+        </div>
+        <strong>Copyright &copy; 2023 <a href="https://github.com/githubliufuwen/kavi">KAVI</a>.</strong> All rights reserved.
+    </footer>
+
+    <!-- Control Sidebar -->
+    <aside class="control-sidebar control-sidebar-dark">
+        <!-- Control sidebar content goes here -->
+    </aside>
+</div>
+
+<script src="./webui/plugins/jquery.min.js"></script>
+<script src="./webui/plugins/bootstrap/bootstrap.bundle.min.js"></script>
+<script src="./webui/adminlte/js/adminlte.min.js"></script>
+<script src="./webui/plugins/jquery.overlayScrollbars.min.js"></script>
+</body>
+</html>
