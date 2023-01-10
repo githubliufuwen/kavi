@@ -1,9 +1,4 @@
-let CONST_ALL_SERVICE = "http://localhost:8080/kavi/kong/services";
-
-
 let allServices = []
-let totalService=0
-
 function getAllService(baseUrl){
     $.ajax({
         type:"get",
@@ -19,28 +14,20 @@ function services(data){
         console.log("暂无service.")
         return
     }
-    totalService = data.data.length;
     allServices = data.data.sort(compare("created_at"));
-    renderSerices(allServices);
+    pagi(renderSerices,allServices)
 }
-
 
 $("#searchService").click(function() {
     let keyword = $("#searchInput").val()
     searchLocal(keyword);
 })
-
-function searchReset(){
-    totalService=allServices.length;
-    renderSerices(allServices)
-}
-
 function searchLocal(keyword){
     if(allServices.length==0){
         return
     }
     if(!keyword){
-        searchReset();
+        pagi(renderSerices,allServices)
         return
     }
     //search name
@@ -51,17 +38,11 @@ function searchLocal(keyword){
             hits.push(sv)
         }
     }
-    totalService = hits.length
-    renderSerices(hits);
-}
-function clearService(){
-    $("#servicesbody").empty();
+    pagi(renderSerices,hits);
 }
 
 function renderSerices (data){
-
-    $("#totalService").text(totalService);
-    clearService();
+    $("#servicesbody").empty();
     if(data ==null || data.length==0){
         return
     }

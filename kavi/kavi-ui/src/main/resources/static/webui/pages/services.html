@@ -13,7 +13,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>SERVICES</h1>
+                    <h4>SERVICES</h4>
                 </div>
             </div>
         </div><!-- /.container-fluid -->
@@ -75,15 +75,18 @@
             </div>
             <div class="card-footer clearfix">
                 <div class="card-tools float-left">
-                    <i class="fa fa-shopping-bag"></i> Total Services <span id="totalService"></span>,and 20 items per page.
+                    <i class="fa fa-shopping-bag"></i>
+                    Total items <span class = "pagi-total">0</span>,
+                    current page <span class="pagi-current">1</span>,
+                    and 20 items per page.
                 </div>
                 <div class="card-tools float-right">
-                    <ul class="pagination">
-                        <li class="page-item"><a href="#" class="page-link">&lt;</a></li>
-                        <li class="page-item"><a href="#" class="page-link">1</a></li>
-                        <li class="page-item"><a href="#" class="page-link">2</a></li>
-                        <li class="page-item"><a href="#" class="page-link">3</a></li>
-                        <li class="page-item"><a href="#" class="page-link">&gt;</a></li>
+                    <ul class="pagination pagi">
+                        <li class="page-item"><a href="#" class="page-link pagi-previous">&lt;</a></li>
+                        <li class="page-item"><a href="#" class="page-link pagi-page">1</a></li>
+                        <li class="page-item"><a href="#" class="page-link pagi-page">2</a></li>
+                        <li class="page-item"><a href="#" class="page-link pagi-page">3</a></li>
+                        <li class="page-item"><a href="#" class="page-link pagi-after">&gt;</a></li>
                     </ul>
                 </div>
             </div>
@@ -96,12 +99,12 @@
 <script src="../adminlte/js/adminlte.min.js"></script>
 <script src="../js/config.js"></script>
 <script src="../js/services.js"></script>
-<script src="../js/pagination.js"></script>
+<script src="../js/pagi.js"></script>
 <script>
 
- var config = getGlobalConfig();
+ let kong_base_url = getGlobalConfig().kongUrl();
 $(function (){
-    getAllService(config.kongUrl())
+    getAllService(kong_base_url)
 })
 
 </script>
