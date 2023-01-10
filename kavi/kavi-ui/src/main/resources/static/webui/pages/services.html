@@ -31,16 +31,14 @@
                 </div>
                 <div class="row">
                     <div class="col-md-8 offset-md-2">
-                        <form action="simple-results.html">
-                            <div class="input-group">
-                                <input type="search" class="form-control form-control-lg" placeholder="Type service name keywords">
-                                <div class="input-group-append">
-                                    <button type="submit" class="btn btn-lg btn-default">
-                                        <i class="fa fa-search"></i>
-                                    </button>
-                                </div>
+                        <div class="input-group">
+                            <input id ="searchInput" type="search" class="form-control form-control-lg" placeholder="Type service name keywords">
+                            <div class="input-group-append">
+                                <button id="searchService" type="submit" class="btn btn-lg btn-default">
+                                    <i class="fa fa-search"></i>
+                                </button>
                             </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -48,83 +46,39 @@
                 <table id="services" class="table table-striped table-hover">
                     <thead>
                     <tr>
-                        <th style="width: 5%">
+                        <th>
                             <i class="fa fa-info-circle"></i>
                         </th>
-                        <th style="width: 20%">
-                            NAME
-                        </th>
-                        <th style="width: 20%">
-                            TAGS
+                        <th  >
+                            Name
                         </th>
                         <th>
-                            HOST
+                            Tags
                         </th>
-                        <th style="width: 25%" class="text-center">
-                            Description
+                        <th>
+                            Host
+                        </th>
+                        <th>
+                            Enable
+                        </th>
+                        <th>
+                            CreatedAt
                         </th>
                         <th>
                         </th>
                     </tr>
                     </thead>
-                    <tbody>
-                    <tr>
-                        <td>
-                            <a href="#" style="text-decoration: none;color: white">
-                                <i class="fa-eye fa"></i>
-                            </a>
-                        </td>
-                        <td>
-                            <a href="#" style="font-weight: bold" class="text-nowrap">
-                                OPEN-API-HIVE-large-long
-                            </a>
-                            <br/>
-                            <small class="text-black">
-                                Created at 2020.01.23
-                            </small>
-                        </td>
-                        <td>
-                            <ul class="list-inline">
-                                <li class="list-inline-item">
-                                    <span class="badge badge-danger">
-                                         <i class="fa fa-tags"></i>
-                                    </span>
-                                </li>
-                                <li class="list-inline-item">
-                                    <span class="badge badge-success">
-                                          一号线
-                                    </span>
-                                </li>
-                                <li class="list-inline-item">
-                                    <span class="badge badge-success">
-                                          ACT
-                                    </span>
-                                </li>
-                            </ul>
-                        </td>
-                        <td class="project_progress">
-                             UDSS.COM
-                        </td>
-                        <td>
-                            <p title="this is my first open api of kong.so colud you help me to solve the problems?" class="text-left text-black text-nowrap" style="text-overflow: ellipsis;overflow: hidden;max-width: 400px">
-                                this is my first open api of kong.so colud you help me to solve the problems?
-                            </p>
-
-                        </td>
-                        <td class="project-actions text-right">
-                            <a class="btn btn-danger btn-sm" href="#">
-                                <i class="fas fa-trash">
-                                </i>
-                                Delete
-                            </a>
-                        </td>
-                    </tr>
+                    <tbody id="servicesbody">
+                     <!--services here-->
                     </tbody>
                 </table>
             </div>
             <div class="card-footer clearfix">
+                <div class="card-tools float-left">
+                    <i class="fa fa-shopping-bag"></i> Total Services <span id="totalService"></span>,and 20 items per page.
+                </div>
                 <div class="card-tools float-right">
-                    <ul class="pagination pagination-sm">
+                    <ul class="pagination">
                         <li class="page-item"><a href="#" class="page-link">&lt;</a></li>
                         <li class="page-item"><a href="#" class="page-link">1</a></li>
                         <li class="page-item"><a href="#" class="page-link">2</a></li>
@@ -140,5 +94,16 @@
 <script src="../plugins/jquery.min.js"></script>
 <script src="../plugins/bootstrap/bootstrap.bundle.min.js"></script>
 <script src="../adminlte/js/adminlte.min.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/services.js"></script>
+<script src="../js/pagination.js"></script>
+<script>
+
+ var config = getGlobalConfig();
+$(function (){
+    getAllService(config.kongUrl())
+})
+
+</script>
 </body>
 </html>
