@@ -1,5 +1,11 @@
 let allServices = []
-function getAllService(baseUrl){
+let baseUrl = getGlobalConfig().kongUrl();
+
+$(function (){
+    getAllService();
+
+})
+function getAllService(){
     $.ajax({
         type:"get",
         url:baseUrl+"/services",
@@ -57,14 +63,14 @@ function renderSerices (data){
                     "</span></li>";
             }
         }
-        let tr = "<tr>" +
+        let tr = "<tr id=\""+sv.id+"\">" +
             "                        <td>" +
-            "                            <a href=\"#\" style=\"text-decoration: none;color: white\">" +
+            "                            <a onclick=\"showRowview(this)\" data-toggle=\"modal\" data-target=\"#rowview\" href=\"#\" style=\"text-decoration: none;color: white\">" +
             "                                <i class=\"fa-eye fa\"></i>" +
             "                            </a>" +
             "                        </td>" +
             "                        <td>" +
-            "                            <a href=\"#\" style=\"font-weight: bold\">" +
+            "                            <a href=\"#\" class=\"text text-success text-bold\">" +
                                             sv.name +
             "                            </a>" +
             "                        </td>" +
@@ -90,7 +96,12 @@ function renderSerices (data){
                                             new Date(sv.created_at*1000).format('yyyy/MM/dd hh:mm:ss')+
             "                        </td>"+
             "                        <td class=\"project-actions text-right\">" +
-            "                            <a class=\"btn btn-danger btn-sm\" href=\"#\">" +
+            "                           <a class=\"btn btn-outline-success btn-sm\" href=\"#\" onclick='#'>" +
+        "                                    <i class=\"fas fa-plug\">" +
+        "                                   </i>" +
+        "                                Plugins" +
+        "                               </a>" +
+            "                            <a class=\"btn btn-outline-danger btn-sm\" href=\"#\" onclick='deleteService(this)'>" +
             "                                <i class=\"fas fa-trash\">" +
             "                                </i>" +
             "                                Delete" +
@@ -99,5 +110,48 @@ function renderSerices (data){
             "                    </tr>";
         $("#servicesbody").append(tr);
     }
+}
+function showRowview(e){
+
+    let id = getTableRowId(e);
+    $.ajax({
+        type:"get",
+        url:baseUrl+"/services/"+id,
+        dataType:"json",
+        data:{
+        },
+        success:function (data) {
+            let json = JSON.stringify(data,null,5)
+            console.log(json)
+            $("#rowview-text").text(JSON.stringify(data,null,4))
+        }
+    });
+}
+
+
+function deleteService(element){
+    if(!confirm("Really want to delete the selected item?")){
+        console.log('取消')
+        return
+    }
+    let id = getTableRowId(element)
+    $.ajax({
+        type:"delete",
+        url:baseUrl+"/services/"+id,
+        dataType:"json",
+        data:{
+        },
+        success: function (data) {
+            if(!data){
+                data = 'Delete success!'
+            }
+            toastr.success(data)
+            getAllService();
+        },
+        error:function (e){
+            let msg = e.responseText
+            toastr.error(msg)
+        }
+    });
 }
 

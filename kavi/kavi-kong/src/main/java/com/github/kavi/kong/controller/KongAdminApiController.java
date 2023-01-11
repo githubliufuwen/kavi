@@ -26,14 +26,8 @@ public class KongAdminApiController {
     @RequestMapping("/**")
     public ResponseEntity<Object> kong(HttpServletRequest request){
         log.info("uri:{}",request.getRequestURI());
-        try {
-            ResponseEntity<Object> result =  kongAdminApiService.kong(request);
-            return result;
-        } catch (Throwable e) {
-            log.error("forward kong request error",e);
-            return ResponseEntity.status(500)
-                    .body("kong node admin api unreachable");
-        }
+        return kongAdminApiService.kong(request);
+
     }
 
 }

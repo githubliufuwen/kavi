@@ -2,18 +2,18 @@ package com.github.kavi.kong.service;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
+import com.github.kavi.result.ReturnEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import org.yaml.snakeyaml.util.UriEncoder;
 
+import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,7 +42,7 @@ public class KongAdminApiService {
     private String stripPath = "/kavi/kong";
 
 
-    public ResponseEntity<Object> kong(HttpServletRequest request) throws Throwable {
+    public ResponseEntity<Object> kong(HttpServletRequest request){
 
         String uri = request.getRequestURI();
         uri = handleUri(uri);
@@ -74,7 +74,19 @@ public class KongAdminApiService {
         HttpEntity<Object> httpEntity = new HttpEntity<>(body, headers);
         URI destURI = buildURI(query,kongHost + uri);
         HttpMethod httpMethod = HttpMethod.resolve(method);
-        return doForward(destURI, httpMethod, httpEntity, query);
+        try {
+            ResponseEntity<Object> res = doForward(destURI, httpMethod, httpEntity, query);
+            return res;
+        } catch (Throwable e) {
+            if(e instanceof HttpStatusCodeException){
+                HttpStatusCodeException hse = (HttpStatusCodeException)e;
+                HttpStatus status = ((HttpStatusCodeException) e).getStatusCode();
+                return ResponseEntity.status(status)
+                        .body(hse.getResponseBodyAsString());
+            }
+            return ResponseEntity.status(500)
+                    .body(ReturnEntity.error("kong node admin api unreachable."));
+        }
     }
 
     private String handleUri(String uri){
@@ -104,19 +116,23 @@ public class KongAdminApiService {
         queryInParam.forEach(k->parameterMap.remove(k));
     }
 
-    private Map<String,String> parseQuery(HttpServletRequest request) throws UnsupportedEncodingException {
+    private Map<String,String> parseQuery(HttpServletRequest request) {
 
         Map<String,String> query = new HashMap<>();
         String querystring = request.getQueryString();
         if(StrUtil.isBlank(querystring)){
             return query;
         }
-        querystring = URLDecoder.decode(querystring,"utf-8");
+        try {
+            querystring = URLDecoder.decode(querystring,"utf-8");
+        } catch (UnsupportedEncodingException e) {
+             log.error("UnsupportedEncodingException",e);
+        }
         query = HttpUtil.decodeParamMap(querystring, Charset.defaultCharset());
         return query;
     }
 
-    private URI buildURI(Map<String, String> query, String path) throws URISyntaxException {
+    private URI buildURI(Map<String, String> query, String path) {
 
         //1拼接参数
         StringBuilder sb = new StringBuilder();
@@ -127,22 +143,27 @@ public class KongAdminApiService {
             sb.append(query.get(key));
             sb.append("&");
         }
-        if(sb.length()==0){
-            URI uri = new URI(path);
-            return uri;
+        URI uri = null;
+        try {
+            if(sb.length()==0){
+               uri = new URI(path);
+                return uri;
+            }
+            if(sb.length()>0){
+                sb.deleteCharAt(sb.length()-1);
+            }
+            //参数编码
+            String parameters = UriEncoder.encode(sb.toString());
+            String destPath = path+"?"+parameters;
+            uri = new URI(destPath);
+        } catch (Exception e) {
+           log.error("uri error",e);
         }
-        if(sb.length()>0){
-            sb.deleteCharAt(sb.length()-1);
-        }
-        //参数编码
-        String parameters = UriEncoder.encode(sb.toString());
-        String destPath = path+"?"+parameters;
-        URI uri = new URI(destPath);
         return  uri;
     }
 
 
-    private Object buildBody(HttpServletRequest request, MultiValueMap<String, Object> params) throws IOException {
+    private Object buildBody(HttpServletRequest request, MultiValueMap<String, Object> params) {
 
         String contentType = request.getContentType();
         if(StrUtil.isBlank(contentType)){
@@ -152,10 +173,14 @@ public class KongAdminApiService {
             return params;
         }
         byte[] body = null;
-        InputStream in = request.getInputStream();
-        if(in!=null && in.available()>0){
-            body = new byte[in.available()];
-            in.read(body);
+        try {
+            InputStream in = request.getInputStream();
+            if(in!=null && in.available()>0){
+                body = new byte[in.available()];
+                in.read(body);
+            }
+        } catch (Exception e) {
+            log.error("read body error",e);
         }
         return body;
     }

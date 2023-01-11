@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="../plugins/fontawesome-free/all.min.css">
     <link rel="stylesheet" href="../adminlte/css/adminlte.min.css">
+    <link rel="stylesheet" href="../plugins/toastr.min.css">
+    <link rel="stylesheet" href="../plugins/bootstrap-4.min.css">
     <title>DASHBOARD</title>
 </head>
 <body class="hold-transition sidebar-mini dark-mode">
@@ -13,28 +15,26 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h4>SERVICES</h4>
+                    <small class="text text-black text-nowrap">&nbsp;&nbsp;Service entities, as the name implies, are abstractions of each of your own upstream services. Examples of Services would be a data transformation microservice, a billing API, etc.</small>
                 </div>
             </div>
         </div><!-- /.container-fluid -->
-        <small class="text text-black">&nbsp;&nbsp;Service entities, as the name implies, are abstractions of each of your own upstream services. Examples of Services would be a data transformation microservice, a billing API, etc.</small>
     </section>
     <!-- Main content -->
     <section class="content">
-
-        <div class="card h-100">
+        <div class="card h-100 card-gray-dark">
             <div class="card-header">
-                <div class="card-tools">
-                    <button type="button" class="btn btn-block btn-success">
-                       ADD SERVICE
+                <div class="card-tools float-left">
+                    <button type="button" class="btn btn-success btn-default">
+                       <i class="fa fa-plus">&nbsp;ADD NEW</i>
                     </button>
                 </div>
                 <div class="row">
                     <div class="col-md-8 offset-md-2">
                         <div class="input-group">
-                            <input id ="searchInput" type="search" class="form-control form-control-lg" placeholder="Type service name keywords">
+                            <input id ="searchInput" autocomplete="off" type="search" class="form-control form-control-lg" placeholder="Type service name keywords">
                             <div class="input-group-append">
-                                <button id="searchService" type="submit" class="btn btn-lg btn-default">
+                                <button id="searchService" type="submit" class="btn btn btn-default">
                                     <i class="fa fa-search"></i>
                                 </button>
                             </div>
@@ -69,7 +69,7 @@
                     </tr>
                     </thead>
                     <tbody id="servicesbody">
-                     <!--services here-->
+                     <!-- services here -->
                     </tbody>
                 </table>
             </div>
@@ -78,7 +78,7 @@
                     <i class="fa fa-shopping-bag"></i>
                     Total items <span class = "pagi-total">0</span>,
                     current page <span class="pagi-current">1</span>,
-                    and 20 items per page.
+                    and <span class = "pagi-perpage">40</span> items per page.
                 </div>
                 <div class="card-tools float-right">
                     <ul class="pagination pagi">
@@ -94,18 +94,32 @@
     </section>
 </div>
 
+<div class="modal fade" id="rowview">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Row View</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id = "rowview-text" class="text-success bg-gradient-dark" style="white-space: pre-wrap"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="../plugins/jquery.min.js"></script>
 <script src="../plugins/bootstrap/bootstrap.bundle.min.js"></script>
 <script src="../adminlte/js/adminlte.min.js"></script>
+<script src="../plugins/toastr.min.js"></script>
+<script src="../plugins/sweetalert2.min.js"></script>
 <script src="../js/config.js"></script>
-<script src="../js/services.js"></script>
 <script src="../js/pagi.js"></script>
+<script src="../js/table.js"></script>
+<script src="../js/services.js"></script>
 <script>
-
- let kong_base_url = getGlobalConfig().kongUrl();
-$(function (){
-    getAllService(kong_base_url)
-})
 
 </script>
 </body>

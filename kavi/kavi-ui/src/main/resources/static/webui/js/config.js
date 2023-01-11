@@ -42,3 +42,14 @@ function compare(field){
         return b-a;
     }
 }
+
+var Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: true,
+    timer: 3000
+});
+
+function getToast(){
+    return Toast;
+}
