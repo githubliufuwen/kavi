@@ -130,28 +130,38 @@ function showRowview(e){
 
 
 function deleteService(element){
-    if(!confirm("Really want to delete the selected item?")){
-        console.log('取消')
-        return
-    }
-    let id = getTableRowId(element)
-    $.ajax({
-        type:"delete",
-        url:baseUrl+"/services/"+id,
-        dataType:"json",
-        data:{
-        },
-        success: function (data) {
-            if(!data){
-                data = 'Delete success!'
-            }
-            toastr.success(data)
-            getAllService();
-        },
-        error:function (e){
-            let msg = e.responseText
-            toastr.error(msg)
+    Swal.fire({
+        title: 'Are you sure?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Confirm',
+        confirmButtonColor: '#28a745',
+        cancelButtonColor: '#dc3545',
+        background: '#19191A',
+        reverseButtons: true
+    }).then((result) => {
+        if (!result.isConfirmed) {
+             return
         }
-    });
+        let id = getTableRowId(element)
+        $.ajax({
+            type:"delete",
+            url:baseUrl+"/services/"+id,
+            dataType:"json",
+            data:{
+            },
+            success: function (data) {
+                if(!data){
+                    data = 'Delete success!'
+                }
+                toastr.success(data)
+                getAllService();
+            },
+            error:function (e){
+                let msg = e.responseText
+                toastr.error(msg)
+            }
+        });
+    })
 }
 
