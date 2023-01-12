@@ -109,10 +109,10 @@
         </div>
     </aside>
 
-    <div class="content-wrapper iframe-mode bg-dark" data-widget="iframe" data-auto-dark-mode="true" data-loading-screen="800">
-        <div class="nav navbar navbar-expand-lg navbar-dark border-bottom border-dark p-0">
+    <div class="content-wrapper iframe-mode" data-widget="iframe" data-auto-dark-mode="true">
+        <div class="nav navbar navbar-expand navbar-dark border-bottom border-dark p-0 nav-collapse-hide-child">
             <a class="nav-link bg-danger" href="#" data-widget="iframe-close">Close</a>
-            <ul class="navbar-nav" role="tablist">
+            <ul class="navbar-nav">
                 <li class="nav-item active" role="presentation">
                     <a class="nav-link active" data-toggle="row" id="tab-index-html" href="#index-html" role="tab" aria-controls="panel-index-html" aria-selected="true">Dashboard</a>
                 </li>
@@ -120,7 +120,7 @@
             <a class="nav-link bg-dark" href="#" data-widget="iframe-fullscreen"><i class="fas fa-expand"></i></a>
         </div>
         <div class="tab-content">
-            <div class="tab-pane fade" id="index-html" role="tabpanel" aria-labelledby="tab-index-html"><iframe src="./webui/pages/dashboard.html"></iframe></div>
+            <div class="tab-pane" id="index-html" role="tabpanel" aria-labelledby="tab-index-html"><iframe src="./webui/pages/dashboard.html"></iframe></div>
         </div>
     </div>
 
@@ -139,11 +139,30 @@
 
 <script src="./webui/plugins/jquery.min.js"></script>
 <script src="./webui/plugins/bootstrap/bootstrap.bundle.min.js"></script>
-<script src="./webui/adminlte/js/adminlte.min.js"></script>
+<script src="./webui/adminlte/js/adminlte.js"></script>
 <script src="./webui/plugins/jquery.overlayScrollbars.min.js"></script>
 <script>
-
-
+    $('.content-wrapper').IFrame({
+        onTabClick(item) {
+            console.log(item)
+            return item
+        },
+        onTabChanged(item) {
+            console.log(item)
+            return item
+        },
+        onTabCreated(item) {
+            console.log(item)
+            return item
+        },
+        autoIframeMode: true,
+        autoItemActive: true,
+        autoShowNewTab: true,
+        autoDarkMode: true,
+        allowDuplicates: false,
+        loadingScreen: 750,
+        useNavbarItems: false
+    })
 </script>
 </body>
 </html>

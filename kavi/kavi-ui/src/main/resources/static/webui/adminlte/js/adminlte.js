@@ -1280,9 +1280,8 @@
 
       var newNavItem = "<li class=\"nav-item\" role=\"presentation\"><a href=\"#\" class=\"btn-iframe-close\" data-widget=\"iframe-close\" data-type=\"only-this\"><i class=\"fas fa-times\"></i></a><a class=\"nav-link\" data-toggle=\"row\" id=\"" + navId + "\" href=\"#" + tabId + "\" role=\"tab\" aria-controls=\"" + tabId + "\" aria-selected=\"false\">" + title + "</a></li>";
       $__default["default"](SELECTOR_TAB_NAVBAR_NAV).append(unescape(escape(newNavItem)));
-      var newTabItem = "<div class=\"tab-pane fade\" id=\"" + tabId + "\" role=\"tabpanel\" aria-labelledby=\"" + navId + "\"><iframe src=\"" + link + "\"></iframe></div>";
+      var newTabItem = "<div class=\"tab-pane fade\" id=\"" + tabId + "\" role=\"tabpanel\" aria-labelledby=\"" + navId + "\"><iframe  src=\"" + link + "\"></iframe></div>";
       $__default["default"](SELECTOR_TAB_CONTENT).append(unescape(escape(newTabItem)));
-
       if (autoOpen) {
         if (this._config.loadingScreen) {
           var $loadingScreen = $__default["default"](SELECTOR_TAB_LOADING);
@@ -1304,7 +1303,6 @@
           this.switchTab("#" + navId);
         }
       }
-
       this.onTabCreated($__default["default"]("#" + navId));
     };
 
@@ -1346,18 +1344,14 @@
 
     _proto.switchTab = function switchTab(item, reload) {
       var _this2 = this;
-
       if (reload === void 0) {
         reload = false;
       }
-
       var $item = $__default["default"](item);
       var tabId = $item.attr('href');
       $__default["default"](SELECTOR_TAB_EMPTY).hide();
-
       if (reload) {
         var $loadingScreen = $__default["default"](SELECTOR_TAB_LOADING);
-
         if (this._config.loadingScreen) {
           $loadingScreen.show(0, function () {
             $__default["default"](tabId + " iframe").attr('src', $__default["default"](tabId + " iframe").attr('src')).ready(function () {
@@ -1376,7 +1370,6 @@
           $__default["default"](tabId + " iframe").attr('src', $__default["default"](tabId + " iframe").attr('src'));
         }
       }
-
       $__default["default"](SELECTOR_TAB_NAVBAR_NAV + " .active").tab('dispose').removeClass('active');
 
       this._fixHeight();

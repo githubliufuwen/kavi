@@ -70,7 +70,7 @@ function renderSerices (data){
             "                            </a>" +
             "                        </td>" +
             "                        <td>" +
-            "                            <a href=\"#\" class=\"text text-success text-bold\">" +
+            "                            <a href=\"services_detail.html?id="+sv.id+"\" class=\"text text-success text-bold\">" +
                                             sv.name +
             "                            </a>" +
             "                        </td>" +
@@ -96,11 +96,11 @@ function renderSerices (data){
                                             new Date(sv.created_at*1000).format('yyyy/MM/dd hh:mm:ss')+
             "                        </td>"+
             "                        <td class=\"project-actions text-right\">" +
-            "                           <a class=\"btn btn-outline-success btn-sm\" href=\"#\" onclick='#'>" +
-        "                                    <i class=\"fas fa-plug\">" +
-        "                                   </i>" +
-        "                                Plugins" +
-        "                               </a>" +
+        //     "                           <a class=\"btn btn-outline-success btn-sm\" href=\"#\" onclick='#'>" +
+        // "                                    <i class=\"fas fa-plug\">" +
+        // "                                   </i>" +
+        // "                                Plugins" +
+        // "                               </a>" +
             "                            <a class=\"btn btn-outline-danger btn-sm\" href=\"#\" onclick='deleteService(this)'>" +
             "                                <i class=\"fas fa-trash\">" +
             "                                </i>" +
@@ -163,5 +163,10 @@ function deleteService(element){
             }
         });
     })
+}
+
+function serviceDetail(element){
+    let id = getTableRowId(element)
+    window.location.href="services_detail.html?id="+id
 }
 
