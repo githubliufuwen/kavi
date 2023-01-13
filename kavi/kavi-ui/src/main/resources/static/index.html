@@ -37,7 +37,7 @@
             <nav class="mt-2">
                 <ul class="nav nav-pills nav-sidebar flex-column" role="menu" data-accordion="false">
                     <li class="nav-item">
-                        <a href="webui/pages/dashboard.html" class="nav-link active">
+                        <a href="./webui/pages/dashboard.html" class="nav-link active">
                             <i class="nav-icon fas fa-tachometer-alt"></i>
                             <p>
                                 Dashboard
@@ -46,13 +46,13 @@
                     </li>
                     <li class="nav-header"><b>GATEWAY</b></li>
                     <li class="nav-item">
-                        <a href="webui/pages/configinfo.html" class="nav-link">
+                        <a href="./webui/pages/configinfo.html" class="nav-link">
                             <i class="fas fa-info-circle nav-icon"></i>
                             <p>CONFIG INFO</p>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="webui/pages/services.html" class="nav-link">
+                        <a href="./webui/pages/services.html" class="nav-link">
                             <i class="nav-icon fa fa-cloud"></i>
                             <p>SERVICES</p>
                         </a>
@@ -117,7 +117,7 @@
             <!--tab bar list-->
             <ul class="navbar-nav" role="tablist">
                 <li class="nav-item active" role="presentation">
-                    <a class="nav-link active" data-toggle="row" id="tab-index-html" href="#index-html" role="tab" aria-controls="panel-index-html" aria-selected="true">Dashboard</a>
+                    <a class="nav-link active" data-toggle="row" id="tab-webui-pages-dashboard-html" href="#panel-webui-pages-dashboard-html" role="tab" aria-controls="panel-webui-pages-dashboard-html" aria-selected="true">Dashboard</a>
                 </li>
             </ul>
             <!--fullscreen-->
@@ -126,7 +126,7 @@
             </a>
         </div>
         <div class="tab-content">
-            <div class="tab-pane" id="index-html" role="tabpanel" aria-labelledby="tab-index-html">
+            <div class="tab-pane fade" id="panel-webui-pages-dashboard-html" role="tabpanel" aria-labelledby="tab-webui-pages-dashboard-html">
                 <iframe src="./webui/pages/dashboard.html"></iframe>
             </div>
         </div>
@@ -152,12 +152,15 @@
 <script>
     let iframeConfig = {
         onTabClick: function onTabClick(item) {
+            console.log(item)
             return item;
         },
         onTabChanged: function onTabChanged(item) {
+            console.log(item)
             return item;
         },
         onTabCreated: function onTabCreated(item) {
+            console.log(item)
             return item;
         },
         autoIframeMode: true,
@@ -166,7 +169,7 @@
         autoDarkMode: true,
         allowDuplicates: false,
         allowReload: true,
-        loadingScreen: true,
+        loadingScreen: false,
         useNavbarItems: true,
         scrollOffset: 40,
         scrollBehaviorSwap: false,

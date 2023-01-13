@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../plugins/toastr.min.css">
     <link rel="stylesheet" href="../plugins/bootstrap-4.min.css">
     <link rel="stylesheet" href="../plugins/sweetalert2.min.css">
+    <link rel="stylesheet" href="../plugins/jquery.json-viewer.css">
     <link rel="stylesheet" href="../css/common.css">
 
     <title>SERVICES</title>
@@ -16,7 +17,7 @@
 <div class="wrapper">
     <section class="content-header">
         <div class="container-fluid">
-            <div class="row mb-2">
+            <div class="row mb-1">
                 <div class="col-sm-6">
                     <small class="text text-black text-nowrap">&nbsp;&nbsp;Service entities, as the name implies, are abstractions of each of your own upstream services. Examples of Services would be a data transformation microservice, a billing API, etc.</small>
                 </div>
@@ -85,11 +86,11 @@
                 </div>
                 <div class="card-tools float-right">
                     <ul class="pagination pagi">
-                        <li class="page-item"><a href="#" class="page-link pagi-previous">&lt;</a></li>
-                        <li class="page-item"><a href="#" class="page-link pagi-page">1</a></li>
-                        <li class="page-item"><a href="#" class="page-link pagi-page">2</a></li>
-                        <li class="page-item"><a href="#" class="page-link pagi-page">3</a></li>
-                        <li class="page-item"><a href="#" class="page-link pagi-after">&gt;</a></li>
+<!--                        <li class="page-item"><a href="#" class="page-link pagi-previous">&lt;</a></li>-->
+<!--                        <li class="page-item"><a href="#" class="page-link pagi-page">1</a></li>-->
+<!--                        <li class="page-item"><a href="#" class="page-link pagi-page">2</a></li>-->
+<!--                        <li class="page-item"><a href="#" class="page-link pagi-page">3</a></li>-->
+<!--                        <li class="page-item"><a href="#" class="page-link pagi-after">&gt;</a></li>-->
                     </ul>
                 </div>
             </div>
@@ -107,20 +108,19 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div id = "rowview-text" class="text-success text-bold bg-true-dark" style="white-space: pre-wrap"></div>
+                <div id = "rowview-text" class="text text-white bg-true-dark" style="white-space: pre-wrap"></div>
             </div>
         </div>
     </div>
 </div>
 
 <script src="../plugins/jquery.min.js"></script>
+<script src="../plugins/jquery.json-viewer.js"></script>
 <script src="../plugins/bootstrap/bootstrap.bundle.min.js"></script>
-<script src="../adminlte/js/adminlte.min.js"></script>
+<script src="../adminlte/js/adminlte.js"></script>
 <script src="../plugins/toastr.min.js"></script>
 <script src="../plugins/sweetalert2.min.js"></script>
 <script src="../js/common.js"></script>
-<script src="../js/pagi.js"></script>
-<script src="../js/table.js"></script>
 <script src="../js/services.js"></script>
 
 </script>

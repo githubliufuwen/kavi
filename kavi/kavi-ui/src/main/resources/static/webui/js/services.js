@@ -1,14 +1,26 @@
 let allServices = []
-let baseUrl = getGlobalConfig().kongUrl();
-
 $(function (){
+    /**
+     * register table events
+     */
+    $(document).on('click','a[data-target="#rowview"]',function (e) {
+        showRowview(e.target)
+    })
+    $(document).on('click','a.sv-name',function (e) {
+        serviceDetail(e.target)
+    })
+    $(document).on('click','a.sv-del',function (e) {
+        deleteService(e.target)
+    })
+    /**
+     * get data
+     */
     getAllService();
-
 })
 function getAllService(){
     $.ajax({
         type:"get",
-        url:baseUrl+"/services",
+        url: kaviConfig.kongUrl+"/services",
         dataType:"json",
         data:{
         },
@@ -39,11 +51,15 @@ function searchLocal(keyword){
     //search name
     let hits = []
     for(let sv of allServices){
-        let name = sv.name+"";
-        if(name.search(keyword)>0){
+        let name = sv.name+'';
+        console.log(sv.name+'','name')
+        console.log(keyword,'keyword')
+        console.log(name.includes(keyword),'search')
+        if(name.includes(keyword)){
             hits.push(sv)
         }
     }
+    console.log(hits)
     pagi(renderSerices,hits);
 }
 
@@ -65,12 +81,12 @@ function renderSerices (data){
         }
         let tr = "<tr id=\""+sv.id+"\">" +
             "                        <td>" +
-            "                            <a onclick=\"showRowview(this)\" data-toggle=\"modal\" data-target=\"#rowview\" href=\"#\" style=\"text-decoration: none;color: white\">" +
+            "                            <a data-toggle=\"modal\" data-target=\"#rowview\" href=\"#\" style=\"text-decoration: none;color: white\">" +
             "                                <i class=\"fa-eye fa\"></i>" +
             "                            </a>" +
             "                        </td>" +
             "                        <td>" +
-            "                            <a href=\"services_detail.html?id="+sv.id+"\" class=\"text text-success text-bold\">" +
+            "                            <a href=\"#\"  class=\"text text-success text-bold sv-name\">" +
                                             sv.name +
             "                            </a>" +
             "                        </td>" +
@@ -96,12 +112,7 @@ function renderSerices (data){
                                             new Date(sv.created_at*1000).format('yyyy/MM/dd hh:mm:ss')+
             "                        </td>"+
             "                        <td class=\"project-actions text-right\">" +
-        //     "                           <a class=\"btn btn-outline-success btn-sm\" href=\"#\" onclick='#'>" +
-        // "                                    <i class=\"fas fa-plug\">" +
-        // "                                   </i>" +
-        // "                                Plugins" +
-        // "                               </a>" +
-            "                            <a class=\"btn btn-outline-danger btn-sm\" href=\"#\" onclick='deleteService(this)'>" +
+            "                            <a class=\"btn btn-outline-danger btn-sm sv-del\" href=\"#\">" +
             "                                <i class=\"fas fa-trash\">" +
             "                                </i>" +
             "                                Delete" +
@@ -113,17 +124,15 @@ function renderSerices (data){
 }
 function showRowview(e){
 
-    let id = getTableRowId(e);
+    let id = Table.getRowByChildElement(e).attr('id');
     $.ajax({
         type:"get",
-        url:baseUrl+"/services/"+id,
+        url:kaviConfig.kongUrl+"/services/"+id,
         dataType:"json",
         data:{
         },
         success:function (data) {
-            let json = JSON.stringify(data,null,5)
-            console.log(json)
-            $("#rowview-text").text(JSON.stringify(data,null,4))
+            $("#rowview-text").jsonViewer(data,jsonviewConfig)
         }
     });
 }
@@ -143,10 +152,10 @@ function deleteService(element){
         if (!result.isConfirmed) {
              return
         }
-        let id = getTableRowId(element)
+        let id = Table.getRowByChildElement(e).attr('id');
         $.ajax({
             type:"delete",
-            url:baseUrl+"/services/"+id,
+            url:kaviConfig.kongUrl+"/services/"+id,
             dataType:"json",
             data:{
             },
@@ -166,7 +175,7 @@ function deleteService(element){
 }
 
 function serviceDetail(element){
-    let id = getTableRowId(element)
-    window.location.href="services_detail.html?id="+id
+   let id = Table.getRowByChildElement(element).attr('id');
+    window.location.href="./services_detail.html?id="+id
 }
 

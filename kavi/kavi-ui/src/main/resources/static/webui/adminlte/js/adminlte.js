@@ -1340,7 +1340,6 @@
 
             var uniqueName = unescape(link).replace('./', '').replace(/["#&'./:=?[\]]/gi, '-').replace(/(--)/gi, '');
             var navId = "tab-" + uniqueName;
-
             if (!this._config.allowDuplicates && $__default["default"]("#" + navId).length > 0) {
                 return this.switchTab("#" + navId, this._config.allowReload);
             }
@@ -1357,6 +1356,7 @@
             }
             var $item = $__default["default"](item);
             var tabId = $item.attr('href');
+            console.log(tabId,'tabId')
             $__default["default"](SELECTOR_TAB_EMPTY).hide();
             if (reload) {
                 var $loadingScreen = $__default["default"](SELECTOR_TAB_LOADING);
@@ -1375,6 +1375,7 @@
                         });
                     });
                 } else {
+                    console.log($__default["default"](tabId + " iframe").attr('src'),'src')
                     $__default["default"](tabId + " iframe").attr('src', $__default["default"](tabId + " iframe").attr('src'));
                 }
             }
@@ -1456,14 +1457,15 @@
 
         _proto._init = function _init() {
 
-            var usingDefTab = $__default["default"](SELECTOR_TAB_CONTENT).children().length > 2;
+            // var usingDefTab = $__default["default"](SELECTOR_TAB_CONTENT).children().length > 2;
+            //when not set loading and empty,default tab-pane cloud not init.solve it.
+            var usingDefTab = $__default["default"](SELECTOR_TAB_CONTENT+" .tab-pane").length > 0;
             this._setupListeners();
             this._fixHeight(true);
 
             if (usingDefTab) {
                 var $el = $__default["default"]("" + SELECTOR_TAB_PANE).first(); // eslint-disable-next-line no-console
                 var uniqueName = $el.attr('id').replace('panel-', '');
-                console.log(uniqueName)
                 var navId = "#tab-" + uniqueName;
                 this.switchTab(navId, true);
             }
@@ -1510,7 +1512,6 @@
                     });
                 }
             }
-
             $__default["default"](document).on('click', SELECTOR_TAB_NAVBAR_NAV_LINK, function (e) {
                 e.preventDefault();
 
@@ -1518,13 +1519,14 @@
 
                 _this3.switchTab(e.target);
             });
-            $__default["default"](document).on('click', SELECTOR_TAB_NAVBAR_NAV_LINK, function (e) {
-                e.preventDefault();
-
-                _this3.onTabClick(e.target);
-
-                _this3.switchTab(e.target);
-            });
+            //twice register SELECTOR_TAB_NAVBAR_NAV_LINK click event
+            // $__default["default"](document).on('click', SELECTOR_TAB_NAVBAR_NAV_LINK, function (e) {
+            //     e.preventDefault();
+            //
+            //     _this3.onTabClick(e.target);
+            //
+            //     _this3.switchTab(e.target);
+            // });
             $__default["default"](document).on('click', SELECTOR_DATA_TOGGLE_CLOSE, function (e) {
                 e.preventDefault();
                 var target = e.target;
