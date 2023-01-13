@@ -52,7 +52,7 @@ let jsonviewConfig = function jsonviewerConfig(){
  */
 let SELECTOR_CLASS_PAGI_PRIVIOUS = '.pagi-previous'
 let SELECTOR_CLASS_PAGI_AFTER = '.pagi-after'
-let SELECTOR_CLASS_PAGI_PAGE = 'pagi-page'
+let SELECTOR_CLASS_PAGI_PAGE = '.pagi-page'
 let SELECTOR_CLASS_PAGI_TOTAL = '.pagi-total'
 let SELECTOR_CLASS_PAGI_CURRENT = '.pagi-current'
 let SELECTOR_CLASS_PAGI_PERPAGE = '.pagi-perpage'
