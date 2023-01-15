@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>KAVI</title>
     <link rel="icon" href="./favicon.ico" />
-    <link rel="stylesheet" href="webui/plugins/fontawesome-free/all.css">
+    <link rel="stylesheet" href="webui/plugins/fontawesome-free/all.min.css">
     <link rel="stylesheet" href="webui/adminlte/css/adminlte.min.css">
     <link rel="stylesheet" href="webui/plugins/OverlayScrollbars.min.css">
 </head>
@@ -149,34 +149,8 @@
 <script src="./webui/plugins/bootstrap/bootstrap.bundle.min.js"></script>
 <script src="./webui/adminlte/js/adminlte.js"></script>
 <script src="./webui/plugins/jquery.overlayScrollbars.min.js"></script>
+<script src="./webui/js/kavi.js"></script>
 <script>
-    let iframeConfig = {
-        onTabClick: function onTabClick(item) {
-            console.log(item)
-            return item;
-        },
-        onTabChanged: function onTabChanged(item) {
-            console.log(item)
-            return item;
-        },
-        onTabCreated: function onTabCreated(item) {
-            console.log(item)
-            return item;
-        },
-        autoIframeMode: true,
-        autoItemActive: true,
-        autoShowNewTab: true,
-        autoDarkMode: true,
-        allowDuplicates: false,
-        allowReload: true,
-        loadingScreen: false,
-        useNavbarItems: true,
-        scrollOffset: 40,
-        scrollBehaviorSwap: false,
-        iconMaximize: 'fa-expand',
-        iconMinimize: 'fa-compress',
-        widget: 'iframe'
-    }
     $(".content-wrapper").IFrame(iframeConfig);
 </script>
 </body>
