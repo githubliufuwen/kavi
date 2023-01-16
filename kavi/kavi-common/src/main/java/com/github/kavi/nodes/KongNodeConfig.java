@@ -1,4 +1,4 @@
-package com.github.kavi.config;
+package com.github.kavi.nodes;
 
 /**
  * @Author liufuwen

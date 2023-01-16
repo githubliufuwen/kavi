@@ -9,12 +9,15 @@ let kaviConfig = function() {
     return conf
 }()
 
-let DELETE_SUCCESS_TIP = "Delete success!"
-
+let DELETE_SUCCESS_TIP = "Delete Success!"
+let EDIT_SUCCESS_TIP = "Edit Success!"
+let ADD_SUCCESS_TIP = "Add Success!"
 $(function () {
     //close cache
     $('input[type="text"]').attr("autocomplete",'off')
+
     $.ajaxSetup({
+        contentType: "application/json",
         error:function (e) {
             let msg = e.responseText
             toastr.error(msg)
@@ -105,7 +108,6 @@ let Service = function Service(){
                 if(data==null ||data.data.length==0){
                     return
                 }
-                console.log(data)
                 allServices = data.data.sort(compare("created_at"));
                 pagi(renderSerices,allServices)
             }
@@ -204,8 +206,8 @@ let Service = function Service(){
     return Service
 }()
 
-function KaviSwal(ele,confirmFunc) {
-    Swal.fire({
+function KaviSwal(ele,confirmFunc,cancelFunc) {
+   Swal.fire({
         title: 'Are you sure?',
         icon: 'warning',
         showCancelButton: true,
@@ -216,8 +218,12 @@ function KaviSwal(ele,confirmFunc) {
         reverseButtons: true
     }).then((result) => {
         if (!result.isConfirmed) {
+            if(cancelFunc!= undefined){
+                cancelFunc(ele)
+            }
             return
         }
+        if(confirmFunc!=undefined)
         confirmFunc(ele);
     })
 }
@@ -388,62 +394,92 @@ let noData = function NoData(eleId){
         '                                    </p>' +
         '                                </div>' +
         '                            </div>';
-        return function (){
-            $(SELECTOR_CLASS_NO_DATA).append(html)
+    $(SELECTOR_CLASS_NO_DATA).append(html)
+}
+
+/**
+ * find data local
+ * @param id
+ * @param data
+ * @returns {*}
+ */
+function findDataById(id,data) {
+    for(let d of data){
+        if(id == d.id){
+            return d
         }
-}()
+    }
+}
 
 /**service detail module*/
 let ServiceDetail = function ServiceDetail() {
     let svcid = ''
+    let plugins = []
     ServiceDetail._init= function (serviceId) {
         svcid = serviceId
         //init
-        $(document).on('click','a[data-target="#rowview"]',function (e) {
-            showRow(e.target)
+        $(document).on('click','a[data-target="#rowview"].svc-plugin',function (e) {
+            showRowPlugin(e.target)
+        })
+        $(document).on('click','a[data-target="#rowview"].svc-route',function (e) {
+            showRowRoute(e.target)
         })
         $(document).on('click','a.del-svc-plug',function (e) {
             KaviSwal(e.target,deleteSvcPlug)
         })
-        $(document).on('click',function (e) {
-            console.log(e.target)
-            // let value = $(e.target).prop('checked')
-            // console.log(value,'v')
+        $(document).on('click','a.del-svc-routes',function (e) {
+            KaviSwal(e.target,delroute)
         })
-        pullPlugins(svcid)
+        pullPlugins()
+        pullRoutes();
     }
-    function showRow(ele) {
-        let pluginId = Table.getRowByChildElement(ele).attr('id')
+
+    /**
+     * @param ele
+     */
+    function showRowPlugin(ele) {
+        let id = Table.getRowByChildElement(ele).attr('id')
         $.ajax({
             type:"get",
-            url:kaviConfig.kongUrl+"/plugins/"+pluginId,
+            url:kaviConfig.kongUrl+"/plugins/"+id,
             success: function (data) {
                 $("#rowview-text").jsonViewer(data,jsonviewConfig)
             }
         });
     }
-    function pullPlugins(svcid) {
+    function pullPlugins() {
+        plugins=[]
         $.ajax({
             type:"get",
             url:kaviConfig.kongUrl+"/services/"+svcid+"/plugins",
             success: function (data) {
-                renderAllServicePlugins(data)
+                if(data!=null && data.data){
+                    plugins = data.data.sort(compare('created_at'))
+                }
+                renderAllServicePlugins()
+            },
+            error: function (e) {
+                let msg = e.responseText
+                toastr.error(msg)
+                //render empty
+                renderAllServicePlugins()
             }
         });
     }
-    function renderAllServicePlugins(data) {
-        $('.table-body.svc-plugins').empty();
-        if(data==null || data.data ==null || data.data.length==0){
-            noData('svc-plug')
+    function renderAllServicePlugins() {
+        $('#svc-plugins tbody').empty();
+        $(".svc-plugins-total").text(plugins.length)
+        if(plugins.length==0){
+            noData("svc-nodata-plug")
             return
         }
         let html = "";
-        for(let svc_plug of data.data){
-            let consumer = svc_plug.consumer?svc_plug.consumer:'All Consumers'
+        for(let svc_plug of plugins){
+            let consumer = svc_plug.consumer?svc_plug.consumer.id:'All Consumers'
             let checked = svc_plug.enabled?"checked":''
             html += "<tr id=\""+svc_plug.id+"\">" +
                 "         <td>" +
-                "             <a data-toggle=\"modal\" data-target=\"#rowview\" href=\"#\" style=\"text-decoration: none;color: white\">" +
+                "             <a data-toggle=\"modal\" class=\"svc-plugin\" data-target=\"#rowview\" href=\"#\" style=\"text-decoration: none;color: white\">" +
                 "                  <i class=\"fa fa-eye\"></i>" +
                 "             </a>" +
                 "            </td>" +
@@ -456,7 +492,7 @@ let ServiceDetail = function ServiceDetail() {
                                     consumer +
                 "                 </td>" +
                 "                 <td>" +
-                "                  <input type=\"checkbox\" "+checked+" data-bootstrap-switch data-off-color=\"danger\" data-on-color=\"success\">" +
+                "                  <input type=\"checkbox\" "+checked+" data-bootstrap-switch class=\"svc-plug-switch\" data-off-color=\"danger\" data-on-color=\"success\">" +
                 "                  </td>" +
                 "                  <td>" +
                 "                    <a class=\"btn btn-outline-danger btn-sm del-svc-plug\">" +
@@ -467,11 +503,43 @@ let ServiceDetail = function ServiceDetail() {
                 "            </tr>";
         }
 
-        $('.table-body.svc-plugins').append(html);
-        $("input[data-bootstrap-switch]").each(function(){
-            $(this).bootstrapSwitch('state', $(this).prop('checked'));
+        $('#svc-plugins tbody').append(html);
+        $("input[data-bootstrap-switch].svc-plug-switch").each(function(){
+            $(this).bootstrapSwitch({
+                state: $(this).prop('checked'),
+                onSwitchChange: function (event,state){
+                    let id = Table.getRowByChildElement(event.target).attr('id')
+                    let plugin = findDataById(id,plugins)
+                    if(plugin == null){
+                        return false
+                    }
+                    //set enabled
+                    plugin.enabled = state
+                    //edit
+                    editEnabled(plugin);
+                }
+            });
         })
     }
+
+    function editEnabled(plugin){
+        $.ajax({
+            type: 'PATCH',
+            data: JSON.stringify(plugin),
+            url: kaviConfig.kongUrl+"/services/"+svcid+"/plugins/"+plugin.id,
+            success: function (data) {
+                toastr.success(EDIT_SUCCESS_TIP)
+                pullPlugins(svcid)
+            },
+            error: function (e) {
+                let msg = e.responseText
+                toastr.error(msg)
+                //refresh
+                pullPlugins(svcid)
+            }
+        })
+    }
+
     function deleteSvcPlug(ele) {
         let plugId = Table.getRowByChildElement(ele).attr('id')
         $.ajax({
@@ -486,7 +554,89 @@ let ServiceDetail = function ServiceDetail() {
             }
         })
     }
-
+    /**routes*/
+    let routes = []
+    function pullRoutes() {
+        routes=[]
+        $.ajax({
+            type:'get',
+            url:kaviConfig.kongUrl+"/services/"+svcid+"/routes",
+            success: function (data) {
+                if(data !=null && data.data){
+                    routes = data.data.sort(compare('created_at'))
+                }
+                //render
+                renderAllRoutes()
+            },
+            error: function (e) {
+                let msg = e.responseText
+                toastr.error(msg)
+                //refresh
+                renderAllRoutes()
+            }
+        })
+    }
+    function renderAllRoutes() {
+        $('#svc-routes tbody').empty();
+        $(".svc-routes-total").text(routes.length)
+        if (routes.length == 0) {
+            noData("svc-nodata-routes")
+            return
+        }
+        let html = "";
+        for (let route of routes) {
+            let pathsArr = JSON.stringify(route.paths)
+            let protocolsArr = JSON.stringify(route.protocols)
+            html += "<tr id=\"" + route.id + "\">" +
+                "         <td>" +
+                "             <a data-toggle=\"modal\" class=\"svc-route\" data-target=\"#rowview\" href=\"#\" style=\"text-decoration: none;color: white\">" +
+                "                  <i class=\"fa fa-eye\"></i>" +
+                "             </a>" +
+                "            </td>" +
+                "            <td>" +
+                "               <a class=\"text text-success svc-plugin-name\" href=\"#\">" +
+                                    route.name +
+                "                </a>" +
+                "                </td>" +
+                "                <td>" +
+                                    pathsArr +
+                "                 </td>" +
+                "                 <td>" +
+                                    protocolsArr+
+                "                  </td>" +
+                "                  <td>" +
+                "                    <a class=\"btn btn-outline-danger btn-sm del-svc-routes\">" +
+                "                        <i class=\"fa fa-trash\"></i>" +
+                "                         Delete" +
+                "                     </a>" +
+                "                    </td>" +
+                "            </tr>";
+        }
+        $("#svc-routes tbody").append(html)
+    }
+    //show rowview
+    function showRowRoute(ele) {
+        let id = Table.getRowByChildElement(ele).attr('id')
+        $.ajax({
+            type:"get",
+            url:kaviConfig.kongUrl+"/routes/"+id,
+            success: function (data) {
+                $("#rowview-text").jsonViewer(data,jsonviewConfig)
+            }
+        });
+    }
+    //del routes
+    function delroute(ele) {
+        let id = Table.getRowByChildElement(ele).attr('id')
+        $.ajax({
+            type:"delete",
+            url:kaviConfig.kongUrl+"/routes/"+id,
+            success: function (data) {
+                toastr.success(DELETE_SUCCESS_TIP)
+                pullRoutes()
+            }
+        });
+    }
     return ServiceDetail
 }()
 

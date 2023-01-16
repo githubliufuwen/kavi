@@ -25,7 +25,6 @@
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item">
                             <a href="./services.html"  style="text-decoration: none;color: white">
-                                <i class="fa-solid fa-arrow-left"></i>&nbsp;
                                 <span class="font-italic text-success" style="text-decoration: underline">
                                     Services
                                 </span>
@@ -41,7 +40,7 @@
     <section class="content">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-lg-6">
+                <div class="col-lg-5">
                     <div class="card">
                         <div class="card-header mb-1">
                             <h2 class="card-title text-bold text-success"><i class="fa fa-edit"></i>&nbsp;Service Detail</h2>
@@ -257,16 +256,20 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-6">
+                <div class="col-lg-7">
                     <div class="card">
                         <div class="card-header mb-1">
                             <h2 class="card-title text-bold text-danger">
-                                <i class="fa fa-plug"></i>&nbsp;Associated Plugins
+                                <i class="fa fa-route"></i>&nbsp;Associated Plugins
                                 <span class="badge badge-danger svc-plugins-total">0</span>
                             </h2>
                             <div class="card-tools">
+                                <a type="button" class="btn btn-success btn-sm">
+                                    <i class="fa fa-add"></i>
+                                    Add Plugin
+                                </a>
                                 <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                    <i class="fas fa-plus"></i>
+                                    <i class="fas fa-minus"></i>
                                 </button>
                             </div>
                         </div>
@@ -290,10 +293,10 @@
                                     </th>
                                 </tr>
                                 </thead>
-                                <tbody class="table-body svc-plugins">
+                                <tbody>
                                 </tbody>
                             </table>
-                            <div id="svc-plug" class="no-data"></div>
+                            <div id="svc-nodata-plug"></div>
                         </div>
                     </div>
                     <div class="card">
@@ -304,13 +307,17 @@
                                 <span class="badge badge-warning svc-routes-total">0</span>
                             </h2>
                             <div class="card-tools">
+                                <a type="button" class="btn btn-success btn-sm">
+                                    <i class="fa fa-add"></i>
+                                    Add Route
+                                </a>
                                 <button type="button" class="btn btn-tool" data-card-widget="collapse">
                                     <i class="fas fa-minus"></i>
                                 </button>
                             </div>
                         </div>
                         <div class="card-body">
-                            <table id="svc-routes" class="table table-striped table-hover">
+                            <table id="svc-routes" class="table table-striped table-hover svc-routes">
                                 <thead>
                                     <tr>
                                         <th>
@@ -320,20 +327,19 @@
                                             Name
                                         </th>
                                         <th>
-                                            Path
+                                            Paths
                                         </th>
                                         <th>
-                                            CreatedAt
+                                            Protocols
                                         </th>
                                         <th>
                                         </th>
                                     </tr>
                                 </thead>
-                                <tbody class="table-body">
-                                <!-- services here -->
+                                <tbody>
                                 </tbody>
                             </table>
-                            <div class="no-data"></div>
+                            <div id = "svc-nodata-routes"></div>
                         </div>
                     </div>
                 </div>
@@ -365,10 +371,12 @@
 <script src="../adminlte/js/adminlte.min.js"></script>
 <script src="../plugins/toastr.min.js"></script>
 <script src="../plugins/sweetalert2.min.js"></script>
+<script src = "../plugins/jquery-deparam.min.js"></script>
 <script src="../js/kavi.js"></script>
 <script>
-    ServiceDetail._init('d7ea2706-976f-4518-934d-a8e55e1a4738')
-
+    let url = window.location.href;
+    let params = $.deparam(url.split("?")[1])
+    ServiceDetail._init(params.id)
 </script>
 </body>
 </html>
