@@ -162,7 +162,7 @@ let Service = function Service(){
                 new Date(sv.created_at*1000).format('yyyy/MM/dd hh:mm:ss')+
                 "                        </td>"+
                 "                        <td>" +
-                "                            <a class=\"btn btn-outline-danger btn-sm sv-del\" href=\"#\">" +
+                "                            <a class=\"btn btn-outline-danger btn-xs sv-del\" href=\"#\">" +
                 "                                <i class=\"fas fa-trash\">" +
                 "                                </i>" +
                 "                                Delete" +
@@ -432,6 +432,68 @@ let ServiceDetail = function ServiceDetail() {
         })
         pullPlugins()
         pullRoutes();
+        getServiceDetail()
+    }
+
+    // service detail
+    let svc = null;
+    function getServiceDetail() {
+
+        $.ajax({
+            type: 'get',
+            url:kaviConfig.kongUrl+"/services/"+svcid,
+            success: function (data) {
+                console.log(data)
+                if(data!=null){
+                    svc = data
+                }
+                setForm()
+            }
+        })
+    }
+
+    function setForm() {
+        $('#svc-enabled').bootstrapSwitch({
+            state: svc==null?false:svc.enabled,
+            size: 'small'
+        })
+
+        $('#svc-name').val(svc.name)
+        $('#svc-protocol').val(svc.protocol)
+        $('#svc-host').val(svc.host)
+        $('#svc-port').val(svc.port)
+        $('#svc-path').val(svc.path)
+
+        let tagsVal = ""
+        if(svc.tags !=null){
+            for(let tag of svc.tags){
+                tagsVal += tag+';'
+            }
+            tagsVal = tagsVal.substring(0,tagsVal.length-1)
+            console.log(tagsVal,'tagsval')
+        }
+        $('#svc-tags').val(tagsVal)
+        $('#svc-tags').tagsInput({
+            'height':'50px',
+            'width':'auto',
+            'interactive':true,
+            'defaultText':'',
+            'delimiter': ';',
+            'removeWithBackspace' : true,
+            'minChars' : 0,
+            'maxChars' : 0
+
+        });
+        $('#svc-retry').val(svc.retries)
+        $('#svc-conn-timeout').val(svc.connect_timeout)
+        $('#svc-read-timeout').val(svc.read_timeout)
+        $('#write_timeout').val(svc.read_timeout)
+        $('#svc-crt-client').val(svc.client_certificate)
+        $('#svc-tls-verify').val(svc.tls_verify)
+        $('#svc-tls_verify_depth').val(svc.tls_verify_depth)
+        $('#svc-ca_certificates').val(svc.ca_certificates)
+        $('#svc-url').val(svc.url)
+
     }
 
     /**
@@ -473,9 +535,9 @@ let ServiceDetail = function ServiceDetail() {
             noData("svc-nodata-plug")
             return
         }
+        $.fn.bootstrapSwitch.defaults.size = 'mini';
         let html = "";
         for(let svc_plug of plugins){
-            let consumer = svc_plug.consumer?svc_plug.consumer.id:'All Consumers'
             let checked = svc_plug.enabled?"checked":''
             html += "<tr id=\""+svc_plug.id+"\">" +
                 "         <td>" +
@@ -488,14 +550,11 @@ let ServiceDetail = function ServiceDetail() {
                                     svc_plug.name+
                 "                </a>" +
                 "                </td>" +
-                "                <td>" +
-                                    consumer +
-                "                 </td>" +
                 "                 <td>" +
-                "                  <input type=\"checkbox\" "+checked+" data-bootstrap-switch class=\"svc-plug-switch\" data-off-color=\"danger\" data-on-color=\"success\">" +
+                "                  <input type=\"checkbox\" "+checked+" data-size=\"mini\" class=\"svc-plug-switch\" data-off-color=\"danger\" data-on-color=\"success\">" +
                 "                  </td>" +
                 "                  <td>" +
-                "                    <a class=\"btn btn-outline-danger btn-sm del-svc-plug\">" +
+                "                    <a class=\"btn btn-outline-danger btn-xs del-svc-plug\">" +
                 "                        <i class=\"fa fa-trash\"></i>" +
                 "                         Delete" +
                 "                     </a>" +
@@ -504,7 +563,7 @@ let ServiceDetail = function ServiceDetail() {
         }
 
         $('#svc-plugins tbody').append(html);
-        $("input[data-bootstrap-switch].svc-plug-switch").each(function(){
+        $("input.svc-plug-switch").each(function(){
             $(this).bootstrapSwitch({
                 state: $(this).prop('checked'),
                 onSwitchChange: function (event,state){
@@ -585,8 +644,7 @@ let ServiceDetail = function ServiceDetail() {
         }
         let html = "";
         for (let route of routes) {
-            let pathsArr = JSON.stringify(route.paths)
-            let protocolsArr = JSON.stringify(route.protocols)
+            let path = route.paths[0]
             html += "<tr id=\"" + route.id + "\">" +
                 "         <td>" +
                 "             <a data-toggle=\"modal\" class=\"svc-route\" data-target=\"#rowview\" href=\"#\" style=\"text-decoration: none;color: white\">" +
@@ -599,13 +657,10 @@ let ServiceDetail = function ServiceDetail() {
                 "                </a>" +
                 "                </td>" +
                 "                <td>" +
-                                    pathsArr +
+                                    path +
                 "                 </td>" +
-                "                 <td>" +
-                                    protocolsArr+
-                "                  </td>" +
                 "                  <td>" +
-                "                    <a class=\"btn btn-outline-danger btn-sm del-svc-routes\">" +
+                "                    <a class=\"btn btn-outline-danger btn-xs del-svc-routes\">" +
                 "                        <i class=\"fa fa-trash\"></i>" +
                 "                         Delete" +
                 "                     </a>" +

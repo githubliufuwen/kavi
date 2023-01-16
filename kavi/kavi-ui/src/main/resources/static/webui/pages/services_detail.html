@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="../plugins/fontawesome-free/all.min.css">
     <link rel="stylesheet" href="../adminlte/css/adminlte.min.css">
+    <link rel="stylesheet" href="../plugins/jquery.tagsinput.css">
     <link rel="stylesheet" href="../plugins/toastr.min.css">
     <link rel="stylesheet" href="../plugins/bootstrap-4.min.css">
     <link rel="stylesheet" href="../plugins/sweetalert2.min.css">
     <link rel="stylesheet" href="../plugins/jquery.json-viewer.css">
+    <link rel="stylesheet" href="../plugins/bootstrap/bootstrap-switch.css">
     <link rel="stylesheet" href="../css/kavi.css">
 
     <title>SERVICES DETAIL</title>
@@ -119,9 +121,9 @@
                                         </small>
                                     </code>
                                 </label>
-                                <input id="svc-tags" type="text" class="form-control form-control-sm form-control-border"
-                                 placeholder="split tags by whitespace,such as:a b c">
-                                <small class="text-gray">Optionally add tags to the service.</small>
+                                <input id="svc-tags"  type="text" style="background-color: #2b3035;color: white">
+                                <small class="text-gray">Optionally add tags to the service.Press <span class="text-danger">Enter</span>
+                                    to accept a tag value.</small>
                             </div>
                             <div class="form-group">
                                 <label for="svc-retry">
@@ -172,14 +174,14 @@
                                     transmitting a request to the upstream server. Defaults to <span class="text-danger">60000</span>.</small>
                             </div>
                             <div class="form-group">
-                                <label for="svc-crt-id">
+                                <label for="svc-crt-client">
                                     Client certificate
                                     <code>
                                         <small>(optional)
                                         </small>
                                     </code>
                                 </label>
-                                <input id="svc-crt-id" type="text" class="form-control form-control-sm form-control-border">
+                                <input id="svc-crt-client" type="text" class="form-control form-control-sm form-control-border">
                                 <small class="text-gray">Certificate <span class="text-danger">(id)</span> to be
                                     used as client certificate while TLS handshaking to the upstream server.
                                 </small>
@@ -229,16 +231,6 @@
                                 </small>
                             </div>
                             <div class="form-group">
-                                <label for="svc-enabled">
-                                    Enabled
-                                </label>
-                                <input id="svc-enabled" type="text" class="form-control form-control-sm form-control-border">
-                                <small class="text-gray">
-                                    Whether the Service is active. If set to false, the proxy behavior will be as if any routes attached to it do not exist (404).
-                                    Default: <span class="text-danger">true</span>.
-                                </small>
-                            </div>
-                            <div class="form-group">
                                 <label for="svc-url">
                                     Url
                                     <code>
@@ -252,20 +244,31 @@
                                     This attribute is write-only (the Admin API never returns the URL).
                                 </small>
                             </div>
+                            <div class="form-group">
+                                <label for="svc-enabled">
+                                    Enabled&nbsp;&nbsp;
+                                </label>
+                                <input id="svc-enabled" type="checkbox" class="form-control form-control-sm form-control-border" checked data-off-color="danger" data-on-color="success">
+                                <p>
+                                    <small class="text-gray">
+                                        Whether the Service is active. If set to false, the proxy behavior will be as if any routes attached to it do not exist (404).
+                                        Default: <span class="text-danger">true</span>.
+                                    </small>
+                                </p>
+                            </div>
                             <button type="submit" class="btn btn-success btn-block">Submit Changes</button>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-7">
                     <div class="card">
-                        <div class="card-header mb-1">
+                        <div class="card-header mb-0">
                             <h2 class="card-title text-bold text-danger">
                                 <i class="fa fa-route"></i>&nbsp;Associated Plugins
                                 <span class="badge badge-danger svc-plugins-total">0</span>
                             </h2>
                             <div class="card-tools">
-                                <a type="button" class="btn btn-success btn-sm">
-                                    <i class="fa fa-add"></i>
+                                <a type="button" class="btn btn-outline-success btn-xs">
                                     Add Plugin
                                 </a>
                                 <button type="button" class="btn btn-tool" data-card-widget="collapse">
@@ -284,9 +287,6 @@
                                         Name
                                     </th>
                                     <th>
-                                        Consumer
-                                    </th>
-                                    <th>
                                        Enabled
                                     </th>
                                     <th>
@@ -300,15 +300,14 @@
                         </div>
                     </div>
                     <div class="card">
-                        <div class="card-header mb-1">
+                        <div class="card-header mb-0">
                             <h2 class="card-title text-bold text-warning">
                                 <i class="fa fa-route"></i>
                                 &nbsp;Associated Routes
                                 <span class="badge badge-warning svc-routes-total">0</span>
                             </h2>
                             <div class="card-tools">
-                                <a type="button" class="btn btn-success btn-sm">
-                                    <i class="fa fa-add"></i>
+                                <a type="button" class="btn btn-outline-success btn-xs">
                                     Add Route
                                 </a>
                                 <button type="button" class="btn btn-tool" data-card-widget="collapse">
@@ -317,7 +316,7 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <table id="svc-routes" class="table table-striped table-hover svc-routes">
+                            <table id="svc-routes" class="table table-hover svc-routes">
                                 <thead>
                                     <tr>
                                         <th>
@@ -327,10 +326,7 @@
                                             Name
                                         </th>
                                         <th>
-                                            Paths
-                                        </th>
-                                        <th>
-                                            Protocols
+                                            Path
                                         </th>
                                         <th>
                                         </th>
@@ -366,6 +362,7 @@
 
 <script src="../plugins/jquery.min.js"></script>
 <script src="../plugins/jquery.json-viewer.js"></script>
+<script src="../plugins/jquery.tagsinput.js"></script>
 <script src="../plugins/bootstrap/bootstrap.bundle.min.js"></script>
 <script src="../plugins/bootstrap/bootstrap-switch.min.js"></script>
 <script src="../adminlte/js/adminlte.min.js"></script>
@@ -377,6 +374,7 @@
     let url = window.location.href;
     let params = $.deparam(url.split("?")[1])
     ServiceDetail._init(params.id)
+
 </script>
 </body>
 </html>
