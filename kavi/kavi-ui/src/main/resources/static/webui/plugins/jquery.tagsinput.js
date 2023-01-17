@@ -1,21 +1,4 @@
-/*
-
-	jQuery Tags Input Plugin 1.3.3
-
-	Copyright (c) 2011 XOXCO, Inc
-
-	Documentation for this plugin lives here:
-	http://xoxco.com/clickable/jquery-tags-input
-
-	Licensed under the MIT license:
-	http://www.opensource.org/licenses/mit-license.php
-
-	ben@xoxco.com
-
-*/
-
 (function($) {
-
 	var delimiter = new Array();
 	var tags_callbacks = new Array();
 	$.fn.doAutosize = function(o){
@@ -101,7 +84,7 @@
                         $('<a>', {
                             href  : '#',
                             title : 'Removing tag',
-                            text  : 'x'
+                            text  : 'X'
                         }).click(function () {
                             return $('#' + id).removeTag(escape(value));
                         })
@@ -175,34 +158,34 @@
    }
 
 	$.fn.tagsInput = function(options) {
-    var settings = jQuery.extend({
-      interactive:true,
-      defaultText:'add a tag',
-      minChars:0,
-      width:'300px',
-      height:'100px',
-      autocomplete: {selectFirst: false },
-      hide:true,
-      delimiter: ',',
-      unique:true,
-      removeWithBackspace:true,
-      placeholderColor:'#666666',
-      autosize: true,
-      comfortZone: 20,
-      inputPadding: 6*2
+    	var settings = jQuery.extend({
+		interactive:true,
+	   	defaultText:'',
+	  	minChars:0,
+	  	width:'auto',
+	  	height:'100px',
+	  	autocomplete: {selectFirst: false },
+	  	hide:true,
+	  	delimiter: ';',
+	  	unique:false,
+	  	removeWithBackspace:true,
+	  	placeholderColor:'#ffffff',
+	  	autosize: true,
+	  	comfortZone: 20,
+	  	inputPadding: 6*2,
+		backgroundColor: '#343A40'
     },options);
 
     	var uniqueIdCounter = 0;
 
 		this.each(function() {
-         // If we have already initialized the field, do not do it again
-         if (typeof $(this).attr('data-tagsinput-init') !== 'undefined') {
-            return;
-         }
+			 // If we have already initialized the field, do not do it again
+			 if (typeof $(this).attr('data-tagsinput-init') !== 'undefined') {
+				return;
+			 }
 
-         // Mark the field as having been initialized
-         $(this).attr('data-tagsinput-init', true);
-
+			 // Mark the field as having been initialized
+			 $(this).attr('data-tagsinput-init', true);
 			if (settings.hide) {
 				$(this).hide();
 			}
@@ -228,16 +211,17 @@
 			var markup = '<div id="'+id+'_tagsinput" class="tagsinput"><div id="'+id+'_addTag">';
 
 			if (settings.interactive) {
-				markup = markup + '<input id="'+id+'_tag" value="" data-default="'+settings.defaultText+'" />';
+				markup = markup + '<input id="'+id+'_tag" value="" data-default="" ' +
+					'style="background-color: '+settings.backgroundColor+'" autocomplete = "off" />';
 			}
 
-			markup = markup + '</div><div class="tags_clear"></div></div>';
+			markup = markup + '</div></div>';
 
 			$(markup).insertAfter(this);
 
 			$(data.holder).css('width',settings.width);
-			$(data.holder).css('min-height',settings.height);
-			$(data.holder).css('height',settings.height);
+			// $(data.holder).css('min-height',settings.height);
+			// $(data.holder).css('height',settings.height);
 
 			if ($(data.real_input).val()!='') {
 				$.fn.tagsInput.importTags($(data.real_input),$(data.real_input).val());

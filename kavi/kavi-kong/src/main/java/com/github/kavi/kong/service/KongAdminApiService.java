@@ -68,14 +68,12 @@ public class KongAdminApiService {
         }
         //读取body
         Object body = buildBody(request, params);
-        //处理用户定义的参数
-        log.info("forward query params:{}", query);
         //转发 body可以为空
         HttpEntity<Object> httpEntity = new HttpEntity<>(body, headers);
         URI destURI = buildURI(query,kongHost + uri);
         HttpMethod httpMethod = HttpMethod.resolve(method);
         try {
-            ResponseEntity<Object> res = doForward(destURI, httpMethod, httpEntity, query);
+            ResponseEntity<Object> res = doForward(destURI, httpMethod, httpEntity);
             return res;
         } catch (Throwable e) {
             if(e instanceof HttpStatusCodeException){
@@ -186,7 +184,8 @@ public class KongAdminApiService {
     }
 
 
-    private ResponseEntity doForward(URI uri, HttpMethod method, HttpEntity httpEntity, Map<String, String> uriVars) throws Throwable {
+    private ResponseEntity doForward(URI uri, HttpMethod method, HttpEntity httpEntity) throws Throwable {
+        log.info("forward start:URI:{},method:{},entity:{}",uri,method,httpEntity);
         ResponseEntity<String> res = restTemplate.exchange(uri, method, httpEntity, String.class);
         log.info("result:{}",res.getStatusCode());
         return res;

@@ -21,7 +21,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-sm-6 md-2">
-                    <h3 class="text-bold"><i class="fa fa-cloud"></i>&nbsp;open Api for hive</h3>
+                    <h3 class="text-bold"><i class="fa fa-cloud"></i>&nbsp;<span id="svc-detail-title-name"></span></h3>
                 </div>
                 <div class="col-sm-6 md-2">
                     <ol class="breadcrumb float-sm-right">
@@ -64,20 +64,20 @@
                                 <input id="svc-name" type="text" class="form-control form-control-sm form-control-border">
                                 <small class="text-gray">The service name.</small>
                             </div>
-                            <div class="form-group">
-                                <label for="svc-associated-crt">
-                                    Associated Certificate
-                                    <code>
-                                        <small>(optional)
-                                        </small>
-                                    </code>
-                                </label>
-                                <input id="svc-associated-crt" type="text" class="form-control form-control-sm form-control-border">
-                                <small class="text-gray">
-                                    The <span class="text-danger">unique identifier or the name</span> attribute of the Certificate that should be associated to
-                                    the newly-created Service.
-                                </small>
-                            </div>
+<!--                            <div class="form-group">-->
+<!--                                <label for="svc-associated-crt">-->
+<!--                                    Associated Certificate-->
+<!--                                    <code>-->
+<!--                                        <small>(optional)-->
+<!--                                        </small>-->
+<!--                                    </code>-->
+<!--                                </label>-->
+<!--                                <input id="svc-associated-crt" type="text" class="form-control form-control-sm form-control-border">-->
+<!--                                <small class="text-gray">-->
+<!--                                    The <span class="text-danger">unique identifier or the name</span> attribute of the Certificate that should be associated to-->
+<!--                                    the newly-created Service.-->
+<!--                                </small>-->
+<!--                            </div>-->
                             <div class="form-group">
                                 <label for="svc-protocol">
                                     Protocol
@@ -121,9 +121,9 @@
                                         </small>
                                     </code>
                                 </label>
-                                <input id="svc-tags"  type="text" style="background-color: #2b3035;color: white">
+                                <input id="svc-tags"  type="text" class="tagsinput-mark">
                                 <small class="text-gray">Optionally add tags to the service.Press <span class="text-danger">Enter</span>
-                                    to accept a tag value.</small>
+                                    to accept a value.</small>
                             </div>
                             <div class="form-group">
                                 <label for="svc-retry">
@@ -222,13 +222,14 @@
                                         </small>
                                     </code>
                                 </label>
-                                <input id="svc-ca_certificates" type="text" class="form-control form-control-sm form-control-border"
-                                    placeholder="spilt UUIDs by whitespace,such as:a b c">
-                                <small class="text-gray">
-                                    <span class="text-danger">Array of CA Certificate object UUIDs</span>  that are used to build the trust store while verifying upstream server’s TLS certificate. If set to null when Nginx default is respected.
-                                    If default CA list in Nginx are not specified and TLS verification is enabled, then handshake with upstream server
-                                    will always fail (because no CA are trusted).
-                                </small>
+                                <input id="svc-ca_certificates"  type="text" class="tagsinput-mark">
+                                <p>
+                                    <small class="text-gray">
+                                        Press <span class="text-danger">Enter</span> to accept a value.<span class="text-danger">Array of CA Certificate object UUIDs</span>  that are used to build the trust store while verifying upstream server’s TLS certificate. If set to null when Nginx default is respected.
+                                        If default CA list in Nginx are not specified and TLS verification is enabled, then handshake with upstream server
+                                        will always fail (because no CA are trusted).
+                                    </small>
+                                </p>
                             </div>
                             <div class="form-group">
                                 <label for="svc-url">
@@ -256,23 +257,23 @@
                                     </small>
                                 </p>
                             </div>
-                            <button type="submit" class="btn btn-success btn-block">Submit Changes</button>
+                            <button type="submit" id="svc-edit-submit" class="btn btn-success btn-block">Submit Changes</button>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-7">
                     <div class="card">
                         <div class="card-header mb-0">
-                            <h2 class="card-title text-bold text-danger">
+                            <h2 class="card-title text-bold text-warning">
                                 <i class="fa fa-route"></i>&nbsp;Associated Plugins
-                                <span class="badge badge-danger svc-plugins-total">0</span>
+                                <span class="badge badge-warning svc-plugins-total">0</span>
                             </h2>
                             <div class="card-tools">
-                                <a type="button" class="btn btn-outline-success btn-xs">
-                                    Add Plugin
+                                <a type="button" class="btn btn-warning btn-sm">
+                                    <i class="fa-regular fa-square-plus"></i>
                                 </a>
                                 <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                    <i class="fas fa-minus"></i>
+                                    <i class="fa fa-minus"></i>
                                 </button>
                             </div>
                         </div>
@@ -288,8 +289,6 @@
                                     </th>
                                     <th>
                                        Enabled
-                                    </th>
-                                    <th>
                                     </th>
                                 </tr>
                                 </thead>
@@ -307,11 +306,11 @@
                                 <span class="badge badge-warning svc-routes-total">0</span>
                             </h2>
                             <div class="card-tools">
-                                <a type="button" class="btn btn-outline-success btn-xs">
-                                    Add Route
+                                <a type="button" class="btn btn-warning btn-sm">
+                                    <i class="fa-regular fa-square-plus"></i>
                                 </a>
                                 <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                    <i class="fas fa-minus"></i>
+                                    <i class="fa fa-minus"></i>
                                 </button>
                             </div>
                         </div>
@@ -327,8 +326,6 @@
                                         </th>
                                         <th>
                                             Path
-                                        </th>
-                                        <th>
                                         </th>
                                     </tr>
                                 </thead>

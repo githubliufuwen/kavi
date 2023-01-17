@@ -17,7 +17,7 @@ $(function () {
     $('input[type="text"]').attr("autocomplete",'off')
 
     $.ajaxSetup({
-        contentType: "application/json",
+        contentType: "application/json;charset=UTF-8",
         error:function (e) {
             let msg = e.responseText
             toastr.error(msg)
@@ -55,6 +55,7 @@ let iframeConfig = {
     iconMinimize: 'fa-compress',
     widget: 'iframe'
 }
+
 /**
  * Services js
  * @type {any}
@@ -74,6 +75,16 @@ let Service = function Service(){
         $(document).on('click','a.sv-del',function (e) {
             // deleteService(e.target)
             KaviSwal(e.target,deleteService)
+        })
+        $(document).on('click','#svc-addnew',function (e) {
+            //init tags input
+            $('#svc-tags').tagsInput()
+            $('#svc-ca_certificates').tagsInput()
+            $('#svc-enabled').bootstrapSwitch()
+        })
+        $(document).on('click','#submitSvc',function (e) {
+            KaviSwal(e.target,addService)
+
         })
         $("#searchService").click(function() {
             let keyword = $("#searchInput").val()
@@ -101,11 +112,9 @@ let Service = function Service(){
         $.ajax({
             type:"get",
             url: kaviConfig.kongUrl+"/services",
-            dataType:"json",
-            data:{
-            },
             success:function (data){
                 if(data==null ||data.data.length==0){
+                    noData("svc-nodata")
                     return
                 }
                 allServices = data.data.sort(compare("created_at"));
@@ -113,6 +122,26 @@ let Service = function Service(){
             }
         });
     }
+
+    /**
+     * add new service
+     */
+    function addService() {
+        let svc = getServiceFormData();
+        $.ajax({
+            type:'POST',
+            url:kaviConfig.kongUrl+"/services",
+            data:JSON.stringify(svc),
+            success:function (data) {
+                toastr.success(ADD_SUCCESS_TIP)
+                Service.getAllService()
+                //hide input form
+                $('#addService').modal('hide')
+                window.location.reload()
+            }
+        })
+    }
+
     let SELECTOR_CLASS_TBODY = 'tbody.table-body'
     function renderSerices (data){
         $(SELECTOR_CLASS_TBODY).empty();
@@ -161,7 +190,7 @@ let Service = function Service(){
                 "                        <td>" +
                 new Date(sv.created_at*1000).format('yyyy/MM/dd hh:mm:ss')+
                 "                        </td>"+
-                "                        <td>" +
+                "                        <td class='d-flex justify-content-end'>" +
                 "                            <a class=\"btn btn-outline-danger btn-xs sv-del\" href=\"#\">" +
                 "                                <i class=\"fas fa-trash\">" +
                 "                                </i>" +
@@ -205,6 +234,63 @@ let Service = function Service(){
     }
     return Service
 }()
+
+function getServiceFormData(){
+    let svc = {};
+    var enabledx = $('#svc-enabled').bootstrapSwitch('state')
+    svc.enabled = enabledx;
+    let svcname = $('#svc-name').val()
+    svc.name = svcname.trim()
+    let protocol = $('#svc-protocol').val()
+    svc.protocol = protocol?protocol.trim():'http'
+    let hostv = $('#svc-host').val()
+    svc.host = hostv.trim()
+    let port = $('#svc-port').val()
+    svc.port =port?parseInt(port):80
+    let path = $('#svc-path').val()
+    svc.path=path?path.trim():null
+    let tagsStr = $('#svc-tags').val()
+    if(tagsStr){
+        let tags = tagsStr.split(";")
+        let tagsArr = new Array()
+        for(let t of tags){
+            if(t.trim()){
+                tagsArr.push(t)
+            }
+        }
+        svc.tags = tagsArr.length>0?tagsArr:null
+    }
+    let retry = $('#svc-retry').val()
+    svc.retries=retry?parseInt(retry):0
+    let ct = $('#svc-conn-timeout').val()
+    svc.connect_timeout=ct?parseInt(ct):svc.connect_timeout
+    let rt = $('#svc-read-timeout').val()
+    svc.read_timeout= rt?parseInt(rt):svc.read_timeout
+    let wt = $('#svc-write-timeout').val()
+    svc.write_timeout=wt?parseInt(wt):svc.write_timeout
+    let crtc = $('#svc-crt-client').val()
+    svc.client_certificate=crtc?{id:crtc}:null
+    let tlsv= $('#svc-tls-verify').val()
+    svc.tls_verify=tlsv?tlsv.trim():null
+    let tlsvd = $('#svc-tls_verify_depth').val()
+    svc.tls_verify_depth=tlsvd?tlsvd.trim():null
+    let crtsStr = $('#svc-ca_certificates').val()
+    if(crtsStr){
+        let crts = crtsStr.split(";")
+        let crtArr = new Array()
+        for(let c of crts){
+            if(c.trim()){
+                crtArr.push(c)
+            }
+        }
+        svc.ca_certificates=crtArr.length>0?crtArr:null
+    }
+    let url = $('#svc-url').val()
+    if(url){
+        svc.url = url.trim()
+    }
+    return svc;
+}
 
 function KaviSwal(ele,confirmFunc,cancelFunc) {
    Swal.fire({
@@ -430,9 +516,25 @@ let ServiceDetail = function ServiceDetail() {
         $(document).on('click','a.del-svc-routes',function (e) {
             KaviSwal(e.target,delroute)
         })
+        $(document).on('click','#svc-edit-submit',function (e) {
+            KaviSwal(e,submitEdit)
+        })
+        getServiceDetail()
         pullPlugins()
         pullRoutes();
-        getServiceDetail()
+
+    }
+    function submitEdit(){
+        let editSvc = getServiceFormData()
+        $.ajax({
+            type: 'patch',
+            url:kaviConfig.kongUrl+"/services/"+svcid,
+            data: JSON.stringify(editSvc),
+            success: function (data) {
+                toastr.success(EDIT_SUCCESS_TIP)
+                getServiceDetail()
+            }
+        })
     }
 
     // service detail
@@ -443,7 +545,6 @@ let ServiceDetail = function ServiceDetail() {
             type: 'get',
             url:kaviConfig.kongUrl+"/services/"+svcid,
             success: function (data) {
-                console.log(data)
                 if(data!=null){
                     svc = data
                 }
@@ -453,6 +554,8 @@ let ServiceDetail = function ServiceDetail() {
     }
 
     function setForm() {
+        //title name
+        $('#svc-detail-title-name').text(svc.name)
         $('#svc-enabled').bootstrapSwitch({
             state: svc==null?false:svc.enabled,
             size: 'small'
@@ -463,35 +566,32 @@ let ServiceDetail = function ServiceDetail() {
         $('#svc-host').val(svc.host)
         $('#svc-port').val(svc.port)
         $('#svc-path').val(svc.path)
-
         let tagsVal = ""
         if(svc.tags !=null){
             for(let tag of svc.tags){
                 tagsVal += tag+';'
             }
             tagsVal = tagsVal.substring(0,tagsVal.length-1)
-            console.log(tagsVal,'tagsval')
         }
         $('#svc-tags').val(tagsVal)
-        $('#svc-tags').tagsInput({
-            'height':'50px',
-            'width':'auto',
-            'interactive':true,
-            'defaultText':'',
-            'delimiter': ';',
-            'removeWithBackspace' : true,
-            'minChars' : 0,
-            'maxChars' : 0
-
-        });
+        $('#svc-tags').tagsInput();
         $('#svc-retry').val(svc.retries)
         $('#svc-conn-timeout').val(svc.connect_timeout)
         $('#svc-read-timeout').val(svc.read_timeout)
-        $('#write_timeout').val(svc.read_timeout)
-        $('#svc-crt-client').val(svc.client_certificate)
+        $('#svc-write-timeout').val(svc.write_timeout)
+        $('#svc-crt-client').val(svc.client_certificate?svc.client_certificate.id:'')
         $('#svc-tls-verify').val(svc.tls_verify)
         $('#svc-tls_verify_depth').val(svc.tls_verify_depth)
-        $('#svc-ca_certificates').val(svc.ca_certificates)
+        let svcCrts = svc.ca_certificates
+        let svcCrtStr = ""
+        if(svcCrts){
+            for(let crt of svcCrts){
+                svcCrtStr+=crt+";"
+            }
+            svcCrtStr = svcCrtStr.substring(0,svcCrtStr.length)
+        }
+        $('#svc-ca_certificates').val(svcCrtStr)
+        $('#svc-ca_certificates').tagsInput()
         $('#svc-url').val(svc.url)
 
     }
@@ -553,7 +653,7 @@ let ServiceDetail = function ServiceDetail() {
                 "                 <td>" +
                 "                  <input type=\"checkbox\" "+checked+" data-size=\"mini\" class=\"svc-plug-switch\" data-off-color=\"danger\" data-on-color=\"success\">" +
                 "                  </td>" +
-                "                  <td>" +
+                "                  <td class=\"d-flex justify-content-end\">" +
                 "                    <a class=\"btn btn-outline-danger btn-xs del-svc-plug\">" +
                 "                        <i class=\"fa fa-trash\"></i>" +
                 "                         Delete" +
@@ -659,8 +759,8 @@ let ServiceDetail = function ServiceDetail() {
                 "                <td>" +
                                     path +
                 "                 </td>" +
-                "                  <td>" +
-                "                    <a class=\"btn btn-outline-danger btn-xs del-svc-routes\">" +
+                "                  <td class='d-flex justify-content-end'>" +
+                "                    <a class=\"btn btn-outline-danger btn-xs del-svc-routes \">" +
                 "                        <i class=\"fa fa-trash\"></i>" +
                 "                         Delete" +
                 "                     </a>" +
@@ -694,6 +794,7 @@ let ServiceDetail = function ServiceDetail() {
     }
     return ServiceDetail
 }()
+
 
 
 
