@@ -12,8 +12,7 @@
     <link rel="stylesheet" href="../plugins/jquery.tagsinput.css">
     <link rel="stylesheet" href="../plugins/bootstrap/bootstrap-switch.css">
     <link rel="stylesheet" href="../css/kavi.css">
-
-    <title>SERVICES</title>
+    <title>ROUTES</title>
 </head>
 <body class="hold-transition sidebar-mini dark-mode">
 <div class="wrapper">
@@ -21,7 +20,10 @@
         <div class="container-fluid">
             <div class="row mb-1">
                 <div class="col-sm-12">
-                    <small class="text text-black text-nowrap">Service entities, as the name implies, are abstractions of each of your own upstream services. Examples of Services would be a data transformation microservice, a billing API, etc.</small>
+                    <small class="text text-black">Route entities define rules to match client requests.
+                        Each Route is associated with a Service, and a Service may have multiple Routes associated to it.
+                        Every request matching a given Route will be proxied to its associated Service.
+                    </small>
                 </div>
             </div>
         </div><!-- /.container-fluid -->
@@ -31,16 +33,16 @@
         <div class="card h-100 card-gray-dark">
             <div class="card-header">
                 <div class="card-tools float-left">
-                    <button type="button" id="svc-addnew" class="btn btn-success btn-sm" data-toggle="modal" data-target="#addService">
+                    <button type="button" id="route-addnew" class="btn btn-success btn-sm" data-toggle="modal" data-target="#addRoute">
                         <i class="fa fa-plus">&nbsp;ADD NEW</i>
                     </button>
                 </div>
                 <div class="row">
                     <div class="col-md-8 offset-md-2">
                         <div class="input-group">
-                            <input id ="searchInput" autocomplete="off" type="search" class="form-control form-control" placeholder="Type service name keywords">
+                            <input id ="searchInput" autocomplete="off" type="search" class="form-control form-control" placeholder="Type route name keywords">
                             <div class="input-group-append">
-                                <button id="searchService" type="submit" class="btn btn-default">
+                                <button id="searchRoutes" type="submit" class="btn btn-default">
                                     <i class="fa fa-search"></i>
                                 </button>
                             </div>
@@ -49,36 +51,35 @@
                 </div>
             </div>
             <div class="card-body p-0 h-100">
-                <table id="services" class="table table-striped projects table-hover">
+                <table id="services" class="table table-striped table-hover projects">
                     <thead>
                     <tr>
                         <th>
                             <i class="fa fa-info-circle"></i>
                         </th>
-                        <th>
+                        <th  >
                             Name
                         </th>
                         <th>
                             Tags
                         </th>
                         <th>
-                            Host
+                            Paths
                         </th>
                         <th>
-                            Enable
+                            Service
                         </th>
                         <th>
                             Created
                         </th>
-                        <th>
-                        </th>
+                        <th></th>
                     </tr>
                     </thead>
                     <tbody class="table-body">
-                     <!-- services here -->
+                    <!-- services here -->
                     </tbody>
                 </table>
-                <div id="svc-nodata"></div>
+                <div id="tab-nodata"></div>
             </div>
             <div class="card-footer clearfix">
                 <div class="card-tools float-left pagi-info">
@@ -107,8 +108,7 @@
         </div>
     </div>
 </div>
-
-<div class="modal fade" id="addService">
+<div class="modal fade" id="addRoute">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -314,7 +314,7 @@
                     <label for="svc-enabled">
                         Enabled&nbsp;&nbsp;
                     </label>
-                    <input id="svc-enabled" type="checkbox" data-size="mini" class="form-control form-control-sm form-control-border" checked data-off-color="danger" data-on-color="success">
+                    <input id="svc-enabled" type="checkbox" class="form-control form-control-sm form-control-border" checked data-off-color="danger" data-on-color="success">
                     <p>
                         <small class="text-gray">
                             Whether the Service is active. If set to false, the proxy behavior will be as if any routes attached to it do not exist (404).
@@ -332,7 +332,6 @@
         </div>
     </div>
 </div>
-
 <script src="../plugins/jquery.min.js"></script>
 <script src="../plugins/jquery.json-viewer.js"></script>
 <script src="../plugins/bootstrap/bootstrap.bundle.min.js"></script>
@@ -343,8 +342,7 @@
 <script src="../plugins/bootstrap/bootstrap-switch.min.js"></script>
 <script src="../js/kavi.js"></script>
 <script>
-    //init service moudle
-    Service._init()
+    Route._init()
 </script>
 </body>
 </html>

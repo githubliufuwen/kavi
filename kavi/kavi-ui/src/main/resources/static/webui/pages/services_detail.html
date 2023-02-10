@@ -13,32 +13,22 @@
     <link rel="stylesheet" href="../plugins/bootstrap/bootstrap-switch.css">
     <link rel="stylesheet" href="../css/kavi.css">
 
-    <title>SERVICES DETAIL</title>
+    <title>SERVICE DETAIL</title>
 </head>
 <body class="hold-transition sidebar-mini dark-mode">
 <div class="wrapper">
     <section class="content-header">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-sm-6 md-2">
-                    <h3 class="text-bold"><i class="fa fa-cloud"></i>&nbsp;<span id="svc-detail-title-name"></span></h3>
+                <div class="col-sm-6 md-1">
+                    <h5><i class="fa fa-cloud"></i>&nbsp;&nbsp;<span id="svc-detail-title-name" class="text-bold"></span></h5>
                 </div>
                 <div class="col-sm-6 md-2">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item">
-                            <a href="./services.html"  style="text-decoration: none;color: white">
-                                <span class="font-italic text-success" style="text-decoration: underline">
-                                    Services
-                                </span>
-                            </a>
-                        </li>
-                        <li class="breadcrumb-item active">service</li>
-                    </ol>
+                    <a href="#" class="text text-success float-sm-right" onclick="window.history.go(-1)"><i class="fa fa-arrow-rotate-back"></i>&nbsp;Back</a>
                 </div>
             </div>
-        </div><!-- /.container-fluid -->
+        </div>
     </section>
-    <!-- Main content -->
     <section class="content">
         <div class="container-fluid">
             <div class="row">
@@ -56,28 +46,14 @@
                             <div class="form-group">
                                 <label for="svc-name">
                                     Name
-                                    <code>
+                                    <span class="text-secondary">
                                         <small>(optional)
                                         </small>
-                                    </code>
+                                    </span>
                                 </label>
                                 <input id="svc-name" type="text" class="form-control form-control-sm form-control-border">
                                 <small class="text-gray">The service name.</small>
                             </div>
-<!--                            <div class="form-group">-->
-<!--                                <label for="svc-associated-crt">-->
-<!--                                    Associated Certificate-->
-<!--                                    <code>-->
-<!--                                        <small>(optional)-->
-<!--                                        </small>-->
-<!--                                    </code>-->
-<!--                                </label>-->
-<!--                                <input id="svc-associated-crt" type="text" class="form-control form-control-sm form-control-border">-->
-<!--                                <small class="text-gray">-->
-<!--                                    The <span class="text-danger">unique identifier or the name</span> attribute of the Certificate that should be associated to-->
-<!--                                    the newly-created Service.-->
-<!--                                </small>-->
-<!--                            </div>-->
                             <div class="form-group">
                                 <label for="svc-protocol">
                                     Protocol
@@ -104,10 +80,10 @@
                             <div class="form-group">
                                 <label for="svc-path">
                                     Path
-                                    <code>
+                                    <span class="text-secondary">
                                         <small>(optional)
                                         </small>
-                                    </code>
+                                    </span>
                                 </label>
                                 <input id="svc-path" type="text" class="form-control form-control-sm form-control-border">
                                 <small class="text-gray">The path to be used in requests to the upstream server.
@@ -116,10 +92,10 @@
                             <div class="form-group">
                                 <label for="svc-tags">
                                     Tags
-                                    <code>
+                                    <span class="text-secondary">
                                         <small>(optional)
                                         </small>
-                                    </code>
+                                    </span>
                                 </label>
                                 <input id="svc-tags"  type="text" class="tagsinput-mark">
                                 <small class="text-gray">Optionally add tags to the service.Press <span class="text-danger">Enter</span>
@@ -128,10 +104,10 @@
                             <div class="form-group">
                                 <label for="svc-retry">
                                     Retries
-                                    <code>
+                                    <span class="text-secondary">
                                         <small>(optional)
                                         </small>
-                                    </code>
+                                    </span>
                                 </label>
                                 <input id="svc-retry" type="text" class="form-control form-control-sm form-control-border">
                                 <small class="text-gray">The number of retries to execute upon failure to proxy. The default is
@@ -140,10 +116,10 @@
                             <div class="form-group">
                                 <label for="svc-conn-timeout">
                                     Connect timeout
-                                    <code>
+                                    <span class="text-secondary">
                                         <small>(optional)
                                         </small>
-                                    </code>
+                                    </span>
                                 </label>
                                 <input id="svc-conn-timeout" type="text" class="form-control form-control-sm form-control-border">
                                 <small class="text-gray">The timeout in milliseconds for establishing a connection to your upstream server.
@@ -152,10 +128,10 @@
                             <div class="form-group">
                                 <label for="svc-read-timeout">
                                     Read timeout
-                                    <code>
+                                    <span class="text-secondary">
                                         <small>(optional)
                                         </small>
-                                    </code>
+                                    </span>
                                 </label>
                                 <input id="svc-read-timeout" type="text" class="form-control form-control-sm form-control-border">
                                 <small class="text-gray">The timeout in milliseconds between two successive read operations for transmitting a request to the upstream server.
@@ -164,10 +140,10 @@
                             <div class="form-group">
                                 <label for="svc-write-timeout">
                                     Write timeout
-                                    <code>
+                                    <span class="text-secondary">
                                         <small>(optional)
                                         </small>
-                                    </code>
+                                    </span>
                                 </label>
                                 <input id="svc-write-timeout" type="text" class="form-control form-control-sm form-control-border">
                                 <small class="text-gray">The timeout in milliseconds between two successive write operations for
@@ -176,10 +152,10 @@
                             <div class="form-group">
                                 <label for="svc-crt-client">
                                     Client certificate
-                                    <code>
+                                    <span class="text-secondary">
                                         <small>(optional)
                                         </small>
-                                    </code>
+                                    </span>
                                 </label>
                                 <input id="svc-crt-client" type="text" class="form-control form-control-sm form-control-border">
                                 <small class="text-gray">Certificate <span class="text-danger">(id)</span> to be
@@ -189,10 +165,10 @@
                             <div class="form-group">
                                 <label for="svc-tls-verify">
                                     Tls_verify
-                                    <code>
+                                    <span class="text-secondary">
                                         <small>(optional)
                                         </small>
-                                    </code>
+                                    </span>
                                 </label>
                                 <input id="svc-tls-verify" type="text" class="form-control form-control-sm form-control-border">
                                 <small class="text-gray">
@@ -203,10 +179,10 @@
                             <div class="form-group">
                                 <label for="svc-tls_verify_depth">
                                     Tls_verify_depth
-                                    <code>
+                                    <span class="text-secondary">
                                         <small>(optional)
                                         </small>
-                                    </code>
+                                    </span>
                                 </label>
                                 <input id="svc-tls_verify_depth" type="text" class="form-control form-control-sm form-control-border">
                                 <small class="text-gray">
@@ -217,10 +193,10 @@
                             <div class="form-group">
                                 <label for="svc-ca_certificates">
                                     Ca_certificates
-                                    <code>
+                                    <span class="text-secondary">
                                         <small>(optional)
                                         </small>
-                                    </code>
+                                    </span>
                                 </label>
                                 <input id="svc-ca_certificates"  type="text" class="tagsinput-mark">
                                 <p>
@@ -234,10 +210,10 @@
                             <div class="form-group">
                                 <label for="svc-url">
                                     Url
-                                    <code>
-                                        <small>(shorthand-attribute)
+                                    <span class="text-secondary">
+                                        <small>(optional)
                                         </small>
-                                    </code>
+                                    </span>
                                 </label>
                                 <input id="svc-url" type="text" class="form-control form-control-sm form-control-border">
                                 <small class="text-gray">
@@ -249,7 +225,7 @@
                                 <label for="svc-enabled">
                                     Enabled&nbsp;&nbsp;
                                 </label>
-                                <input id="svc-enabled" type="checkbox" class="form-control form-control-sm form-control-border" checked data-off-color="danger" data-on-color="success">
+                                <input id="svc-enabled" type="checkbox" data-size="mini" class="form-control form-control-sm form-control-border" checked data-off-color="danger" data-on-color="success">
                                 <p>
                                     <small class="text-gray">
                                         Whether the Service is active. If set to false, the proxy behavior will be as if any routes attached to it do not exist (404).
@@ -264,13 +240,12 @@
                 <div class="col-lg-7">
                     <div class="card">
                         <div class="card-header mb-0">
-                            <h2 class="card-title text-bold text-warning">
-                                <i class="fa fa-route"></i>&nbsp;Associated Plugins
-                                <span class="badge badge-warning svc-plugins-total">0</span>
+                            <h2 class="card-title text-bold text-success">
+                                <i class="fa fa-plug"></i>&nbsp;Associated Plugins
                             </h2>
                             <div class="card-tools">
-                                <a type="button" class="btn btn-warning btn-sm">
-                                    <i class="fa-regular fa-square-plus"></i>
+                                <a type="button" class="btn btn-outline-success  btn-xs">
+                                    <i class="fa-regular fa-plus">&nbsp;Add Plugin</i>
                                 </a>
                                 <button type="button" class="btn btn-tool" data-card-widget="collapse">
                                     <i class="fa fa-minus"></i>
@@ -278,7 +253,7 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <table id="svc-plugins" class="table table-striped table-hover">
+                            <table id="svc-plugins" class="table table-striped table-hover projects">
                                 <thead>
                                 <tr>
                                     <th>
@@ -290,6 +265,7 @@
                                     <th>
                                        Enabled
                                     </th>
+                                    <th width="15%"></th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -300,14 +276,14 @@
                     </div>
                     <div class="card">
                         <div class="card-header mb-0">
-                            <h2 class="card-title text-bold text-warning">
+                            <h2 class="card-title text-bold text-success">
                                 <i class="fa fa-route"></i>
                                 &nbsp;Associated Routes
-                                <span class="badge badge-warning svc-routes-total">0</span>
+<!--                                <span class="badge badge-success svc-routes-total">0</span>-->
                             </h2>
                             <div class="card-tools">
-                                <a type="button" class="btn btn-warning btn-sm">
-                                    <i class="fa-regular fa-square-plus"></i>
+                                <a type="button" class="btn btn-outline-success btn-xs">
+                                    <i class="fa-regular fa-plus">&nbsp;Add Route</i>
                                 </a>
                                 <button type="button" class="btn btn-tool" data-card-widget="collapse">
                                     <i class="fa fa-minus"></i>
@@ -315,7 +291,7 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <table id="svc-routes" class="table table-hover svc-routes">
+                            <table id="svc-routes" class="table table-striped table-hover projects">
                                 <thead>
                                     <tr>
                                         <th>
@@ -327,6 +303,7 @@
                                         <th>
                                             Path
                                         </th>
+                                        <th width="15%"></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -341,7 +318,7 @@
     </section>
 </div>
 
-<div class="modal fade" id="rowview">
+<div class="modal fade" id="rawview">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -351,7 +328,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div id = "rowview-text" class="text text-white bg-true-dark" style="white-space: pre-wrap"></div>
+                <div id = "rawview-text" class="text text-white bg-true-dark" style="white-space: pre-wrap"></div>
             </div>
         </div>
     </div>

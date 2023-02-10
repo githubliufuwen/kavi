@@ -56,6 +56,323 @@ let iframeConfig = {
     widget: 'iframe'
 }
 
+
+let Route_detail = function RouteDetail(){
+    let route_id =''
+    let plugins = []
+    RouteDetail._init = function (routeId){
+        route_id = routeId
+        $(document).on('click','a.del-plug',function (e) {
+            let id = Table.getRowByChildElement(e.target).attr('id')
+            KaviSwal(id,deletePlug)
+        })
+        $(document).on('click','a[data-target="#rawview"].route-plugin',function (e) {
+            let id = Table.getRowByChildElement(e.target).attr('id')
+            showRawPlugin(id)
+        })
+        //pull route data
+        routePlugins()
+        //get detail
+        routeDetail()
+    }
+    function routeDetail() {
+        $.ajax({
+            type: 'get',
+            url: kaviConfig.kongUrl+"/routes/"+route_id,
+            success:function (data){
+                //set title
+                $("#detail-name-title").text(data.name)
+                //set form
+                setRouteForm(data)
+            }
+        })
+    }
+
+    function setRouteForm(data){
+        console.log(data)
+        $('#route-tags').tagsInput();
+        $('#protocols').tagsInput();
+
+        console.log(data)
+
+    }
+
+    function routePlugins(){
+        $.ajax({
+            url:kaviConfig.kongUrl+"/routes/"+route_id+"/plugins",
+            type: 'get',
+            success: function (data) {
+                if(data !=null && data.data){
+                    plugins = data.data.sort(compare('created_at'))
+                }else{
+                    plugins=[]
+                }
+                renderRoutePlgins();
+            }
+        })
+    }
+    function renderRoutePlgins() {
+        $('#route-plugins tbody').empty();
+        if(plugins.length==0){
+            noData("route-plug-nodata")
+            return
+        }
+        $.fn.bootstrapSwitch.defaults.size = 'mini';
+        let html = "";
+        for(let plug of plugins){
+            let checked = plug.enabled?"checked":''
+            html += "<tr id=\""+plug.id+"\">" +
+                "         <td>" +
+                "             <a data-toggle=\"modal\" class=\"route-plugin\" data-target=\"#rawview\" href=\"#\" style=\"text-decoration: none;color: white\">" +
+                "                  <i class=\"fa fa-eye\"></i>" +
+                "             </a>" +
+                "            </td>" +
+                "            <td>" +
+                "               <a class=\"text text-success route-plugin-name\" href=\"#\">" +
+                plug.name+
+                "                </a>" +
+                "                </td>" +
+                "                 <td>" +
+                "                  <input type=\"checkbox\" "+checked+" data-size=\"mini\" class=\"plug-switch\" data-off-color=\"danger\" data-on-color=\"success\">" +
+                "                  </td>" +
+                "                  <td class=\"\">" +
+                "                    <a class=\"btn btn-outline-danger btn-xs del-plug\">" +
+                "                        <i class=\"fa fa-trash\"></i>" +
+                "                         Delete" +
+                "                     </a>" +
+                "                    </td>" +
+                "            </tr>";
+        }
+
+        $('#route-plugins tbody').append(html);
+        $("input.plug-switch").each(function(){
+            $(this).bootstrapSwitch({
+                state: $(this).prop('checked'),
+                onSwitchChange: function (event,state){
+                    let id = Table.getRowByChildElement(event.target).attr('id')
+                    let plugin = findDataById(id,plugins)
+                    if(plugin == null){
+                        return false
+                    }
+                    //set enabled
+                    plugin.enabled = state
+                    //edit
+                    editEnabled(plugin)
+
+                }
+            });
+        })
+    }
+
+    //del plug
+    function deletePlug(id) {
+        $.ajax({
+            type:'delete',
+            url: kaviConfig.kongUrl+"/plugins/"+id,
+            success: function (data) {
+                if(!data){
+                    data = DELETE_SUCCESS_TIP
+                }
+                toastr.success(data)
+                routePlugins()
+            }
+        })
+    }
+    function editEnabled(plugin){
+        $.ajax({
+            type: 'PATCH',
+            data: JSON.stringify(plugin),
+            url: kaviConfig.kongUrl+"/routes/"+route_id+"/plugins/"+plugin.id,
+            success: function (data) {
+                toastr.success(EDIT_SUCCESS_TIP)
+                routePlugins()
+            },
+            error: function (e) {
+                let msg = e.responseText
+                toastr.error(msg)
+                //refresh
+                routePlugins()
+            }
+        })
+    }
+    function showRawPlugin(id) {
+        $.ajax({
+            type:"get",
+            url:kaviConfig.kongUrl+"/plugins/"+id,
+            success: function (data) {
+                $("#rawview-text").jsonViewer(data,jsonviewConfig)
+            }
+        });
+    }
+return RouteDetail
+}()
+
+/**
+ * routes js
+ * @type {any}
+ */
+let Route = function Route(){
+    let SELECTOR_CLASS_TBODY = 'tbody.table-body'
+    let allRoutes=[]
+    Route._init = function (){
+        /**
+         * register events
+         */
+        $(document).on('click','a[data-target="#rawview"]',function (e) {
+            let routeId = Table.getRowByChildElement(e.target).attr('id')
+            showRawview(routeId)
+        })
+        $(document).on('click','a.tab-del',function (e) {
+            let routeId = Table.getRowByChildElement(e.target).attr('id')
+            KaviSwal(routeId, delroute)
+        })
+        $(document).on('click','a.route-name',function (e){
+            let routeId = Table.getRowByChildElement(e.target).attr('id')
+            window.location.href='./route_detail.html?id='+routeId
+        })
+        $(document).on('click','a.svc-name',function (e){
+            let routeId = Table.getRowByChildElement(e.target).attr('id')
+            let route = findDataById(routeId,allRoutes)
+            window.location.href='./services_detail.html?id='+route.service.id
+        })
+        $("#searchRoutes").click(function() {
+            let keyword = $("#searchInput").val()
+            if(allRoutes.length==0){
+                return
+            }
+            if(!keyword){
+                pagi(renderRoutes,allRoutes)
+                return
+            }
+            //search name
+            let hits = []
+            for(let item of allRoutes){
+                let name = item.name+'';
+                if(name.includes(keyword)){
+                    hits.push(item)
+                }
+            }
+            pagi(renderRoutes,hits);
+        })
+
+        //pull routes
+        list();
+    }
+    function delroute(id) {
+        $.ajax({
+            type:"delete",
+            url:kaviConfig.kongUrl+"/routes/"+id,
+            success: function (data) {
+                toastr.success(DELETE_SUCCESS_TIP)
+                getAllRoutes();
+            }
+        });
+    }
+    function showRawview(id) {
+        $.ajax({
+            type:'get',
+            url:kaviConfig.kongUrl+'/routes/'+id,
+            success:function (data) {
+                $("#rawview-text").jsonViewer(data,jsonviewConfig)
+            }
+        })
+    }
+    function list(){
+        $.ajax({
+            url:kaviConfig.kongUrl+"/services",
+            type:'get',
+            success: function (data) {
+                getAllRoutes(data.data)
+            }
+        })
+    }
+    function getAllRoutes(services) {
+        $.ajax({
+            type:'get',
+            url:kaviConfig.kongUrl+'/routes',
+            param:{},
+            success: function (data) {
+                if(data && data.data){
+                    allRoutes = data.data.sort(compare('created_at'))
+                    if(services){
+                        allRoutes.forEach(r=>{
+                            let svc = findDataById(r.service.id,services)
+                            if(svc){
+                                r.service.name = svc.name
+                            }
+                        })
+                    }
+                }else {
+                    allRoutes=[]
+                }
+                pagi(renderRoutes,allRoutes)
+            },
+            error: function (e) {
+               renderRoutes([])
+            }
+        })
+    }
+    function renderRoutes (data){
+        $(SELECTOR_CLASS_TBODY).empty();
+        noData('tab-nodata',data && data.length>0?false:true)
+        for (let i = 0; i < data.length; i++) {
+            let item = data[i]
+            let tag_html = "";
+            if(item.tags && item.tags.length>0){
+                for(let tag of item.tags){
+                    tag_html += "<li class=\"list-inline-item\">" +
+                        "<span class=\"badge badge-success\">"+tag+
+                        "</span></li>";
+                }
+            }
+            let paths_str = ''
+            for(let path of item.paths){
+                paths_str+=path+','
+            }
+            paths_str = paths_str.substring(0,paths_str.length-1)
+            let stripPath = item.strip_path?"badge-success":"badge-danger";
+            let tr = "<tr id=\""+item.id+"\">" +
+                "                        <td>" +
+                "                            <a data-toggle=\"modal\" data-target=\"#rawview\" href=\"#\" style=\"text-decoration: none;color: white\">" +
+                "                                <i class=\"fa-eye fa\"></i>" +
+                "                            </a>" +
+                "                        </td>" +
+                "                        <td>" +
+                "                            <a href=\"#\"  class=\"text text-success text-bold route-name\">" +
+                item.name +
+                "                            </a>" +
+                "                        </td>" +
+                "                        <td>" +
+                "                            <ul class=\"list-inline\">" +
+                tag_html+
+                "                            </ul>" +
+                "                        </td>" +
+                "                        <td>" +
+                paths_str +
+                "                        </td>" +
+                "                        <td>"+
+                "                           <a href=\"#\"  class=\"text text-success text-bold svc-name\">" +
+                item.service.name +
+                "                            </a>" +
+                "                        </td>" +
+                "                        <td>" +
+                new Date(item.created_at*1000).format('yyyy/MM/dd')+
+                "                        </td>"+
+                "                        <td>" +
+                "                            <a class=\"btn btn-outline-danger btn-xs tab-del\" href=\"#\">" +
+                "                                <i class=\"fas fa-trash\">" +
+                "                                </i>" +
+                "                                Delete" +
+                "                            </a>" +
+                "                        </td>" +
+                "                    </tr>";
+            $(SELECTOR_CLASS_TBODY).append(tr);
+        }
+    }
+
+    return Route
+}()
+
 /**
  * Services js
  * @type {any}
@@ -66,8 +383,8 @@ let Service = function Service(){
         /**
          * register table events
          */
-        $(document).on('click','a[data-target="#rowview"]',function (e) {
-            showRowview(e.target)
+        $(document).on('click','a[data-target="#rawview"]',function (e) {
+            showRawview(e.target)
         })
         $(document).on('click','a.sv-name',function (e) {
             serviceDetail(e.target)
@@ -113,11 +430,11 @@ let Service = function Service(){
             type:"get",
             url: kaviConfig.kongUrl+"/services",
             success:function (data){
-                if(data==null ||data.data.length==0){
-                    noData("svc-nodata")
-                    return
+                if(data && data.data){
+                    allServices = data.data.sort(compare("created_at"));
+                }else{
+                    allServices=[]
                 }
-                allServices = data.data.sort(compare("created_at"));
                 pagi(renderSerices,allServices)
             }
         });
@@ -145,9 +462,7 @@ let Service = function Service(){
     let SELECTOR_CLASS_TBODY = 'tbody.table-body'
     function renderSerices (data){
         $(SELECTOR_CLASS_TBODY).empty();
-        if(data ==null || data.length==0){
-            return
-        }
+        noData('svc-nodata',data && data.length>0?false:true)
         for (let i = 0; i < data.length; i++) {
             let sv = data[i]
             let tag_html = "";
@@ -158,9 +473,10 @@ let Service = function Service(){
                         "</span></li>";
                 }
             }
+            let enabled = sv.enabled?"badge-success":"badge-danger";
             let tr = "<tr id=\""+sv.id+"\">" +
                 "                        <td>" +
-                "                            <a data-toggle=\"modal\" data-target=\"#rowview\" href=\"#\" style=\"text-decoration: none;color: white\">" +
+                "                            <a data-toggle=\"modal\" data-target=\"#rawview\" href=\"#\" style=\"text-decoration: none;color: white\">" +
                 "                                <i class=\"fa-eye fa\"></i>" +
                 "                            </a>" +
                 "                        </td>" +
@@ -171,26 +487,21 @@ let Service = function Service(){
                 "                        </td>" +
                 "                        <td>" +
                 "                            <ul class=\"list-inline\">" +
-                "                                <li class=\"list-inline-item\">" +
-                "                                    <span class=\"badge badge-danger\">" +
-                "                                         <i class=\"fa fa-tags\"></i>" +
-                "                                    </span>" +
-                "                                </li>" +
                 tag_html+
                 "                            </ul>" +
                 "                        </td>" +
                 "                        <td>" +
                                             sv.host +
                 "                        </td>" +
-                "                        <td>" +
-                "                            <span class=\"badge badge-success\">" +
-                                             sv.enabled +
+                "                        <td>"+
+                "                            <span class=\"badge "+enabled+"\">" +
+                                             String(sv.enabled).toUpperCase() +
                 "                            </span>" +
                 "                        </td>" +
                 "                        <td>" +
-                new Date(sv.created_at*1000).format('yyyy/MM/dd hh:mm:ss')+
+                new Date(sv.created_at*1000).format('yyyy/MM/dd')+
                 "                        </td>"+
-                "                        <td class='d-flex justify-content-end'>" +
+                "                        <td>" +
                 "                            <a class=\"btn btn-outline-danger btn-xs sv-del\" href=\"#\">" +
                 "                                <i class=\"fas fa-trash\">" +
                 "                                </i>" +
@@ -201,16 +512,15 @@ let Service = function Service(){
             $(SELECTOR_CLASS_TBODY).append(tr);
         }
     }
-    function showRowview(e){
+    function showRawview(e){
         let id = Table.getRowByChildElement(e).attr('id');
         $.ajax({
             type:"get",
             url:kaviConfig.kongUrl+"/services/"+id,
-            dataType:"json",
             data:{
             },
             success:function (data) {
-                $("#rowview-text").jsonViewer(data,jsonviewConfig)
+                $("#rawview-text").jsonViewer(data,jsonviewConfig)
             }
         });
     }
@@ -292,7 +602,7 @@ function getServiceFormData(){
     return svc;
 }
 
-function KaviSwal(ele,confirmFunc,cancelFunc) {
+function KaviSwal(param,confirmFunc,cancelFunc) {
    Swal.fire({
         title: 'Are you sure?',
         icon: 'warning',
@@ -305,12 +615,12 @@ function KaviSwal(ele,confirmFunc,cancelFunc) {
     }).then((result) => {
         if (!result.isConfirmed) {
             if(cancelFunc!= undefined){
-                cancelFunc(ele)
+                cancelFunc(param)
             }
             return
         }
         if(confirmFunc!=undefined)
-        confirmFunc(ele);
+        confirmFunc(param);
     })
 }
 
@@ -439,6 +749,7 @@ let pagi = function Pagi(){
         })
     }
     function renderTotal(){
+
         $(SELECTOR_CLASS_PAGI_TOTAL).text(total);
         $(SELECTOR_CLASS_PAGI_CURRENT).text(current);
         $(SELECTOR_CLASS_PAGI_PERPAGE).text(perPage);
@@ -452,12 +763,18 @@ let pagi = function Pagi(){
         return pages==0?1:pages;
     }
     function renderPagi(){
+        $('.pagi-info').empty()
+        let pagi_total = "<i class=\"fa fa-shopping-bag\"></i>" +
+            "                    Total items <span class = \"pagi-total text-danger\">0</span>," +
+            "                    current page <span class=\"pagi-current text-danger\">1</span>," +
+            "                    and <span class = \"pagi-perpage text-danger\">40</span> items per page."
+        $('.pagi-info').append(pagi_total)
+        $(".pagi").empty()
         let pagi = "<li class=\"page-item\"><a href=\"#\" class=\"page-link pagi-previous text-white\">&lt;</a></li>";
         for (let i=0;i<totalPages;i++){
-            pagi += "<li class=\"page-item\"><a href=\"#\" class=\"page-link pagi-page text-white\">"+(i+1)+"</a></li>";
+            pagi += "<li class=\"page-item \"><a href=\"#\" class=\"page-link pagi-page text-white\">"+(i+1)+"</a></li>";
         }
         pagi +=" <li class=\"page-item\"><a href=\"#\" class=\"page-link pagi-after text-white\">&gt;</a></li>";
-        $(".pagi").empty()
         $(".pagi").append(pagi)
     }
     //return pagi func
@@ -467,12 +784,20 @@ let pagi = function Pagi(){
  * no data function
  * @type {(function(eleId): void)|*}
  */
-let noData = function NoData(eleId){
-    let SELECTOR_CLASS_NO_DATA  = "#"+eleId
+let noData = function NoData(eleId,show){
+    let SELECTOR_NO_DATA  = "#"+eleId
+    if(show==undefined || show == null){
+        show = true
+    }
+    $(SELECTOR_NO_DATA).empty();
+    if(!show){
+        return
+    }
+    //clean and renders
     let html = '<div class="error-page">' +
         '                                <div class="error-content">' +
-        '                                    <h4 class="text-info">' +
-        '                                        <i class="fas fa-exclamation-triangle text-info"></i>' +
+        '                                    <h4 class="text-secondary">' +
+        '                                        <i class="fas fa-exclamation-triangle text-secondary"></i>' +
         '                                        Data Not Found' +
         '                                    </h4>' +
         '                                    <p>' +
@@ -480,8 +805,10 @@ let noData = function NoData(eleId){
         '                                    </p>' +
         '                                </div>' +
         '                            </div>';
-    $(SELECTOR_CLASS_NO_DATA).append(html)
+    $(SELECTOR_NO_DATA).append(html)
 }
+
+
 
 /**
  * find data local
@@ -504,17 +831,21 @@ let ServiceDetail = function ServiceDetail() {
     ServiceDetail._init= function (serviceId) {
         svcid = serviceId
         //init
-        $(document).on('click','a[data-target="#rowview"].svc-plugin',function (e) {
-            showRowPlugin(e.target)
+        $(document).on('click','a[data-target="#rawview"].svc-plugin',function (e) {
+            let id = Table.getRowByChildElement(e.target).attr('id')
+            showRawPlugin(id)
         })
-        $(document).on('click','a[data-target="#rowview"].svc-route',function (e) {
-            showRowRoute(e.target)
+        $(document).on('click','a[data-target="#rawview"].svc-route',function (e) {
+            let id = Table.getRowByChildElement(e.target).attr('id')
+            showRawRoute(id)
         })
         $(document).on('click','a.del-svc-plug',function (e) {
-            KaviSwal(e.target,deleteSvcPlug)
+            let id = Table.getRowByChildElement(e.target).attr('id')
+            KaviSwal(id,deletePlug)
         })
         $(document).on('click','a.del-svc-routes',function (e) {
-            KaviSwal(e.target,delroute)
+            let id = Table.getRowByChildElement(e.target).attr('id')
+            KaviSwal(id,delroute)
         })
         $(document).on('click','#svc-edit-submit',function (e) {
             KaviSwal(e,submitEdit)
@@ -557,8 +888,7 @@ let ServiceDetail = function ServiceDetail() {
         //title name
         $('#svc-detail-title-name').text(svc.name)
         $('#svc-enabled').bootstrapSwitch({
-            state: svc==null?false:svc.enabled,
-            size: 'small'
+            state: svc==null?false:svc.enabled
         })
 
         $('#svc-name').val(svc.name)
@@ -596,16 +926,12 @@ let ServiceDetail = function ServiceDetail() {
 
     }
 
-    /**
-     * @param ele
-     */
-    function showRowPlugin(ele) {
-        let id = Table.getRowByChildElement(ele).attr('id')
+    function showRawPlugin(id) {
         $.ajax({
             type:"get",
             url:kaviConfig.kongUrl+"/plugins/"+id,
             success: function (data) {
-                $("#rowview-text").jsonViewer(data,jsonviewConfig)
+                $("#rawview-text").jsonViewer(data,jsonviewConfig)
             }
         });
     }
@@ -630,7 +956,6 @@ let ServiceDetail = function ServiceDetail() {
     }
     function renderAllServicePlugins() {
         $('#svc-plugins tbody').empty();
-        $(".svc-plugins-total").text(plugins.length)
         if(plugins.length==0){
             noData("svc-nodata-plug")
             return
@@ -641,7 +966,7 @@ let ServiceDetail = function ServiceDetail() {
             let checked = svc_plug.enabled?"checked":''
             html += "<tr id=\""+svc_plug.id+"\">" +
                 "         <td>" +
-                "             <a data-toggle=\"modal\" class=\"svc-plugin\" data-target=\"#rowview\" href=\"#\" style=\"text-decoration: none;color: white\">" +
+                "             <a data-toggle=\"modal\" class=\"svc-plugin\" data-target=\"#rawview\" href=\"#\" style=\"text-decoration: none;color: white\">" +
                 "                  <i class=\"fa fa-eye\"></i>" +
                 "             </a>" +
                 "            </td>" +
@@ -653,7 +978,7 @@ let ServiceDetail = function ServiceDetail() {
                 "                 <td>" +
                 "                  <input type=\"checkbox\" "+checked+" data-size=\"mini\" class=\"svc-plug-switch\" data-off-color=\"danger\" data-on-color=\"success\">" +
                 "                  </td>" +
-                "                  <td class=\"d-flex justify-content-end\">" +
+                "                  <td class=\"\">" +
                 "                    <a class=\"btn btn-outline-danger btn-xs del-svc-plug\">" +
                 "                        <i class=\"fa fa-trash\"></i>" +
                 "                         Delete" +
@@ -699,20 +1024,6 @@ let ServiceDetail = function ServiceDetail() {
         })
     }
 
-    function deleteSvcPlug(ele) {
-        let plugId = Table.getRowByChildElement(ele).attr('id')
-        $.ajax({
-            type:'delete',
-            url: kaviConfig.kongUrl+"/plugins/"+plugId,
-            success: function (data) {
-                if(!data){
-                    data = DELETE_SUCCESS_TIP
-                }
-                toastr.success(data)
-                pullPlugins(svcid)
-            }
-        })
-    }
     /**routes*/
     let routes = []
     function pullRoutes() {
@@ -747,7 +1058,7 @@ let ServiceDetail = function ServiceDetail() {
             let path = route.paths[0]
             html += "<tr id=\"" + route.id + "\">" +
                 "         <td>" +
-                "             <a data-toggle=\"modal\" class=\"svc-route\" data-target=\"#rowview\" href=\"#\" style=\"text-decoration: none;color: white\">" +
+                "             <a data-toggle=\"modal\" class=\"svc-route\" data-target=\"#rawview\" href=\"#\" style=\"text-decoration: none;color: white\">" +
                 "                  <i class=\"fa fa-eye\"></i>" +
                 "             </a>" +
                 "            </td>" +
@@ -759,7 +1070,7 @@ let ServiceDetail = function ServiceDetail() {
                 "                <td>" +
                                     path +
                 "                 </td>" +
-                "                  <td class='d-flex justify-content-end'>" +
+                "                  <td>" +
                 "                    <a class=\"btn btn-outline-danger btn-xs del-svc-routes \">" +
                 "                        <i class=\"fa fa-trash\"></i>" +
                 "                         Delete" +
@@ -769,20 +1080,20 @@ let ServiceDetail = function ServiceDetail() {
         }
         $("#svc-routes tbody").append(html)
     }
-    //show rowview
-    function showRowRoute(ele) {
-        let id = Table.getRowByChildElement(ele).attr('id')
+    function deletePlug(id) {
         $.ajax({
-            type:"get",
-            url:kaviConfig.kongUrl+"/routes/"+id,
+            type:'delete',
+            url: kaviConfig.kongUrl+"/plugins/"+id,
             success: function (data) {
-                $("#rowview-text").jsonViewer(data,jsonviewConfig)
+                if(!data){
+                    data = DELETE_SUCCESS_TIP
+                }
+                toastr.success(data)
+                pullPlugins(svcid)
             }
-        });
+        })
     }
-    //del routes
-    function delroute(ele) {
-        let id = Table.getRowByChildElement(ele).attr('id')
+    function delroute(id) {
         $.ajax({
             type:"delete",
             url:kaviConfig.kongUrl+"/routes/"+id,
@@ -792,8 +1103,19 @@ let ServiceDetail = function ServiceDetail() {
             }
         });
     }
+    function showRawRoute(id) {
+        $.ajax({
+            type:"get",
+            url:kaviConfig.kongUrl+"/routes/"+id,
+            success: function (data) {
+                $("#rawview-text").jsonViewer(data,jsonviewConfig)
+            }
+        });
+    }
     return ServiceDetail
 }()
+
+
 
 
 
